@@ -1,0 +1,43 @@
+// Sa data-table.component.scss
+
+::ng-deep {
+    
+    /* DELETE Button (RED) */
+    .p-button.action-delete {
+        background: transparent !important;
+        border-color: transparent !important;
+        
+        color: #ef4444 !important; 
+        
+        .p-button-icon {
+            color: #ef4444 !important;
+        }
+    }
+
+    /* UPDATE/EDIT Button (BLUE) */
+    .p-button.action-update {
+        background: transparent !important;
+        border-color: transparent !important;
+
+        color: #012053 !important; 
+        
+        .p-button-icon {
+            color: #3b82f6 !important;
+        }
+    }
+
+        .p-button.action-view {
+        background: transparent !important;
+        border-color: transparent !important;
+
+        color: #012053 !important; 
+        
+        .p-button-icon {
+            color: #f6ae3b !important;
+        }
+    }
+    
+    .p-button.p-button-text:not(.p-disabled):hover {
+        background: rgba(0, 0, 0, 0.04) !important;
+    }
+}

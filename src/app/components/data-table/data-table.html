@@ -1,0 +1,72 @@
+<p-table
+  [value]="value"
+  [paginator]="true"
+  [rows]="rowsPerPage"
+  [first]="first"
+  [rowsPerPageOptions]="rowsPerPageOptions"
+  [totalRecords]="totalRecords"
+  [lazy]="lazy"
+  (onLazyLoad)="onLazyLoad.emit($event)"
+  [customSort]="customSort"
+  [(selection)]="selection"
+  (selectionChange)="selectionChange.emit($event)"
+  [metaKeySelection]="false"
+  [dataKey]="dataKey"
+  class="w-full text-sm"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th *ngFor="let col of columns" [style.width]="col.width">
+        <span *ngIf="col.sortable" pSortableColumn="{{ col.field }}">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </span>
+        <span *ngIf="!col.sortable">
+          {{ col.header }}
+        </span>
+      </th>
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="row"></p-tableCheckbox>
+      </td>
+      <td *ngFor="let col of columns">
+        <ng-container>
+          <!-- Image Column -->
+          <img
+            *ngIf="col.isImage"
+            [src]="getImageURL(row[col.field])"
+            alt="Image"
+            width="50"
+            height="50"
+          />
+
+          <!-- Actions Column -->
+          <ng-container *ngIf="col.isAction">
+            <button
+              *ngFor="let action of col.actions"
+              type="button"
+              pButton
+              icon="{{ action.icon }}"
+              [ngClass]="getActionButtonClass(action.action)"
+              (click)="handleAction(action.action, row)"
+            ></button>
+          </ng-container>
+
+          <!-- Default Text Column -->
+          <span *ngIf="!col.isImage && !col.isAction">
+            {{ row[col.field] }}
+          </span>
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
