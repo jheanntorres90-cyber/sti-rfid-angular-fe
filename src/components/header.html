@@ -1,0 +1,16 @@
+<header class="app-header">
+  <div class="header-left">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    <p class="page-date">November 20, 2025</p>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" title="Toggle Dark/Light Mode" (click)="toggleTheme()">🌙</button>
+    <div class="notification">
+      🔔<span class="notification-count">{{ notificationCount }}</span>
+    </div>
+    <div class="user-profile">
+      <div class="user-avatar">{{ userInitials }}</div>
+      <span class="user-name">{{ userName }}</span>
+    </div>
+  </div>
+</header>
