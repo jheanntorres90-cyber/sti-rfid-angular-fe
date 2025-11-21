@@ -2,7 +2,7 @@ import { Environment } from './environment.model';
 
 export const environment: Environment = {
   production: false,
-  apiUrl: 'http://dit-rfid.arvin-stg.org/api',
+  apiUrl: 'http://dit-rfid.arvin-stg.org/api/v1',
   imageURL: 'http://dit-rfid.arvin-stg.org',
   appName: 'STI RFID',
   version: '1.0.0',

@@ -21,8 +21,15 @@ export const routes: Routes = [
     path: 'admin',
     component: MainLayoutComponent,
     children: [
-      { path: 'ats-dashboard', loadComponent: () => import('./feature/ats/admin/dashboard/ats-dashboard.component').then(m => m.AdminAtsDashboardComponent) },
-      { path: 'gps-dashboard', loadComponent: () => import('./feature/gps/admin/dashboard/gps-dashboard.component').then(m => m.AdminGpsDashboardComponent) },
+      { path: 'ats-dashboard',
+        loadComponent: () => import('./feature/ats/admin/dashboard/ats-dashboard.component').then(m => m.AdminAtsDashboardComponent) 
+      },
+      { path: 'gps-dashboard',
+         loadComponent: () => import('./feature/gps/admin/dashboard/gps-dashboard.component').then(m => m.AdminGpsDashboardComponent) 
+      },
+      { path: 'manage-admin',
+         loadComponent: () => import('./feature/admin/manage-admin/manage-admin.component').then(m => m.ManageAdminComponent) 
+      },
     ]
   },
 

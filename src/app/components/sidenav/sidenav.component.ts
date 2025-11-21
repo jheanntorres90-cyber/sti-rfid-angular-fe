@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { ATS_MENUS, GPS_MENUS } from './sidenav.menus';
+import { ADMIN_MENUS, ATS_MENUS, GPS_MENUS } from './sidenav.menus';
 import { MenuItem } from './sidenav.interface';
 
 
@@ -14,15 +14,18 @@ export class SidenavComponent {
   sideNavOpen = true;
   atsMenuOpen = true;
   gpsMenuOpen = true;
+  adminMenuOpen = true;
 
   userRole = localStorage.getItem('userRoleName') || 'Admin';
 
   atsMenu: MenuItem[] = [];
   gpsMenu: MenuItem[] = [];
+  adminMenu: MenuItem[] = [];
 
   constructor() {
     this.atsMenu = ATS_MENUS[this.userRole] || [];
     this.gpsMenu = GPS_MENUS[this.userRole] || [];
+    this.adminMenu = ADMIN_MENUS[this.userRole] || [];
   }
 
   toggleSideNav() {
@@ -33,5 +36,8 @@ export class SidenavComponent {
   }
   toggleGpsMenu() {
     this.gpsMenuOpen = !this.gpsMenuOpen;
+  }
+  toggleAdminMenu() {
+    this.adminMenuOpen = !this.adminMenuOpen;
   }
 }

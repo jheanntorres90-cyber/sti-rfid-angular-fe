@@ -1,0 +1,13 @@
+.dropdown-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;               /* spacing between dropdown and input */
+  justify-content: flex-start;
+}
+
+.dropdown {
+  flex: 0 0 180px;         /* fixed width, don’t let it expand */
+  max-width: 180px;
+  display: inline-flex;    /* inline-flex instead of block */
+}
