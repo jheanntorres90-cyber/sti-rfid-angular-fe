@@ -1,0 +1,15 @@
+<rfid-data-table
+    [value]="listOfData"
+    [columns]="columns"
+    [rowsPerPage]="rowsPerPage"
+    [first]="first"
+    [totalRecords]="totalRecords"
+    [lazy]="true"
+    (onLazyLoad)="loadLazyVariants($event)"
+    [customSort]="true"
+    [(selection)]="selectedData"
+    (selectionChange)="onSelectionChange()"
+    (actionClick)="handleAction($event)"
+    dataKey="id"
+    >
+</rfid-data-table>

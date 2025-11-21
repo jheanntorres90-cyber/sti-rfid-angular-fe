@@ -1,5 +1,12 @@
 import { MenuItem } from './sidenav.interface';
 
+export const ADMIN_MENUS: Record<string, MenuItem[]> = {
+  Admin: [
+    { label: 'Manage Admin', path: '/admin/manage-admin' },
+  ],
+};
+
+
 export const ATS_MENUS: Record<string, MenuItem[]> = {
   Admin: [
     { label: 'Dashboard', path: '/admin/ats-dashboard' },

@@ -1,0 +1,24 @@
+<div class="dropdown-input-container">
+  <input
+    pInputText
+    type="text"
+    [(ngModel)]="searchText"
+    (input)="onSearch()"
+    [placeholder]="searchPlaceholder"
+    class="flex-shrink-0 inline-flex w-[600px] max-w-[600px] px-2 py-1 border border-gray-300 rounded-md"
+  />
+
+  <rfid-primary-button
+    label="+Add" 
+    [hidden]="!isAddVisible" 
+    (addNewOnClick)="onAddNew()">
+  </rfid-primary-button>
+
+  <rfid-primary-button
+    label="Delete"
+    [hidden]="!isDeleteVisible"
+    [disabled]="isButtonDisabled"
+    (addNewOnClick)="onDeleteData()"
+  >
+  </rfid-primary-button>
+</div>

@@ -9,7 +9,7 @@ import { TableColumn } from '../../../models/table-column.model';
 import { environment } from '../../../environments/environment.dit';
 
 @Component({
-  selector: 'sti-data-table',
+  selector: 'rfid-data-table',
   standalone: true,
   imports: [
     TableModule,
