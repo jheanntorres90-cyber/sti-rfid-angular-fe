@@ -1,0 +1,104 @@
+<aside
+  class="bg-slate-950 text-white h-screen flex flex-col transition-all duration-300"
+  [class.w-64]="sideNavOpen"
+  [class.w-16]="!sideNavOpen"
+>
+  <!-- App logo + toggle -->
+  <div
+    class="sticky top-0 z-10 bg-slate-950 p-2 text-xl font-bold border-b border-gray-700 flex items-center justify-between shadow-md"
+  >
+    <h1 [class.hidden]="!sideNavOpen">STI Bacoor</h1>
+    <button (click)="toggleSideNav()" class="p-2 rounded hover:bg-gray-700 transition">
+      <i class="pi pi-bars text-white"></i>
+    </button>
+  </div>
+
+  <!-- Navigation (scrollable) -->
+  <nav
+    class="flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-slate-800"
+  >
+    <!-- Dashboard -->
+    <!-- <a
+      [routerLink]="dashboardLink"
+      routerLinkActive="bg-gray-700"
+      class="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 transition"
+    >
+      <i class="pi pi-chart-bar"></i>
+      <span [class.hidden]="!sideNavOpen">Dashboard</span>
+    </a> -->
+
+    <!-- Attendance Portal with dropdown -->
+    <div>
+      <button
+        (click)="toggleAtsMenu()"
+        class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-gray-700 transition"
+      >
+        <span class="flex items-center gap-2">
+          <i class="pi pi-box"></i>
+          <span [class.hidden]="!sideNavOpen">Attendance Portal</span>
+        </span>
+        <span
+          [class.hidden]="!sideNavOpen"
+          [class.rotate-90]="atsMenuOpen"
+          class="transition-transform"
+        >
+          <i class="pi pi-angle-right"></i>
+        </span>
+      </button>
+
+      <div [class.hidden]="!atsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+        @for (page of atsMenu; track page.path) {
+        <a
+          [routerLink]="page.path"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
+        >
+          {{ page.label }}
+        </a>
+        }
+      </div>
+    </div>
+
+    <!-- Grading Portal with dropdown -->
+    <div>
+      <button
+        (click)="toggleGpsMenu()"
+        class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-gray-700 transition"
+      >
+        <span class="flex items-center gap-2">
+          <i class="pi pi-inbox"></i>
+          <span [class.hidden]="!sideNavOpen">Grading Portal</span>
+        </span>
+        <span
+          [class.hidden]="!sideNavOpen"
+          [class.rotate-90]="gpsMenuOpen"
+          class="transition-transform"
+        >
+          <i class="pi pi-angle-right"></i>
+        </span>
+      </button>
+
+      <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+        @for (page of gpsMenu; track page.path) {
+        <a
+          [routerLink]="page.path"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
+        >
+          {{ page.label }}
+        </a>
+        }
+      </div>
+    </div>
+
+    <!-- Variant -->
+    <!-- <a
+      [routerLink]="variantLink"
+      routerLinkActive="bg-gray-700"
+      class="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 transition"
+    >
+      <i class="pi pi-tag"></i>
+      <span [class.hidden]="!sideNavOpen">Variant</span>
+    </a> -->
+  </nav>
+</aside>
