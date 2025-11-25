@@ -1,0 +1,62 @@
+<div class="modal" [class.show]="showModal" (click)="onModalClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="onClose()">&times;</span>
+    <h2>Admin</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label for="adminId">Admin ID</label>
+        <input 
+          pInputText 
+          id="adminId" 
+          formControlName="adminId" 
+          placeholder="Enter your Admin ID" 
+          autocomplete="username"
+          [class.invalid]="loginForm.get('adminId')?.invalid && loginForm.get('adminId')?.touched" />
+        <div *ngIf="loginForm.get('adminId')?.invalid && loginForm.get('adminId')?.touched" class="error-message">
+          Admin ID is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <p-password 
+          id="password" 
+          formControlName="password" 
+          [feedback]="false" 
+          [toggleMask]="true"
+          placeholder="Enter your password" 
+          autocomplete="current-password"
+          [inputStyleClass]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched ? 'invalid' : ''" />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+          Password is required
+        </div>
+      </div>
+
+      <div class="checkbox-container">
+        <p-checkbox 
+          formControlName="rememberMe" 
+          [binary]="true" 
+          inputId="rememberMe">
+        </p-checkbox>
+        <label for="rememberMe" class="checkbox-label">Remember me</label>
+      </div>
+
+      <button 
+        pButton 
+        type="submit" 
+        class="login-submit-btn" 
+        [disabled]="isLoading"
+        [label]="isLoading ? 'Logging in...' : 'Login to Portal'"
+        [icon]="isLoading ? 'pi pi-spin pi-spinner' : ''">
+      </button>
+    </form>
+
+    <div class="modal-footer">
+      <p>Need help accessing your account?</p>
+      <a href="mailto:admin@schoolportal.com" class="support-link" title="admin@schoolportal.com">
+        Contact Admin Support
+      </a>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { MainLayoutComponent } from './layouts/main/main-layout.component';
 import { LandingComponent } from './feature/landing/landing';
 
+
 export const routes: Routes = [
   {
     path: '',
