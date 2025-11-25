@@ -1,0 +1,30 @@
+<div class="header">
+  <button class="menu-toggle" (click)="toggleMenu()">
+    <i class="fas fa-bars"></i>
+  </button>
+  
+  <div class="page-title">
+    <h1>{{ pageTitle }}</h1>
+    <p id="todayDate">{{ formattedDate }}</p>
+  </div>
+  
+  <div class="header-actions">
+    <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle dark mode">
+      <i class="fas" [class.fa-moon]="!isDarkTheme" [class.fa-sun]="isDarkTheme"></i>
+    </button>
+    
+    <div class="notification-btn" (click)="showNotifications()">
+      <i class="fas fa-bell"></i>
+      @if (notificationCount > 0) {
+        <span class="notification-badge">
+          {{ notificationCount }}
+        </span>
+      }
+    </div>
+    
+    <div class="admin-profile">
+      <div class="admin-avatar">{{ userInitials }}</div>
+      <div>{{ userName }}</div>
+    </div>
+  </div>
+</div>
