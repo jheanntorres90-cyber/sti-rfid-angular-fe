@@ -9,6 +9,7 @@ import { AdminService } from '../../../../../service/admin-service';
 import { ToastService } from '../../../../../service/toast-service';
 import { CommonPayload } from '../../../../../payload/common-payload';
 import { ErrorModel } from '../../../../../models/error-model';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'rfid-admin-table',
@@ -17,6 +18,7 @@ import { ErrorModel } from '../../../../../models/error-model';
     CommonModule,
     DataTable,
     TableModule,
+    HttpClientModule
   ],
   templateUrl: './admin-table.html',
   styleUrl: './admin-table.scss',
@@ -44,17 +46,19 @@ export class AdminTableComponent {
   message = '';
 
   columns: TableColumn[] = [
-    { field: 'image_path', header: 'Image', isImage: true }, 
-    { field: 'variant_name', header: 'Variant Name', sortable: true },
-    {
-      field: 'actions',
-      header: 'Actions',
-      isAction: true,
-      actions: [
-        { label: '', icon: 'pi pi-pencil', action: 'edit' },
-        { label: '', icon: 'pi pi-trash', action: 'delete' }
-      ]
-    }
+      { field: 'image_path', header: 'Image', isImage: true },
+      { field: 'full_name', header: 'Full Name', sortable: true },
+      { field: 'email', header: 'Email', sortable: true },
+      { field: 'username', header: 'Username', sortable: true },
+      {
+        field: 'actions',
+        header: 'Actions',
+        isAction: true,
+        actions: [
+          { label: '', icon: 'pi pi-pencil', action: 'edit' },
+          { label: '', icon: 'pi pi-trash', action: 'delete' }
+        ]
+      }
   ];
 
   constructor(
@@ -87,7 +91,7 @@ export class AdminTableComponent {
   }
 
   loadLazyVariants(event: any) {
-    const token = '';
+    const token = '4|grMCneMIx5d00GnYjzWtzbxoKtDcZIYpeMH9rObfc68e9040';
     const pageNumber = Math.floor(event.first / event.rows) + 1;
 
     const filter: CommonPayload = {
@@ -103,7 +107,7 @@ export class AdminTableComponent {
         this.listOfData = res?.data ?? [];
         console.log('📦 Data now:', this.listOfData);
 
-        this.totalItems = res?.pagination?.total ?? 0;
+        this.totalRecords = res?.pagination?.total ?? 0;
         this.rowsPerPage = filter.per_page ?? 0;
         this.first = event.first;
 
