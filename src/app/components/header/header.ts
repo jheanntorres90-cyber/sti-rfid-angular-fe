@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -72,3 +73,4 @@ export class HeaderComponent implements OnInit {
     console.log('Show notifications clicked');
   }
 }
+
