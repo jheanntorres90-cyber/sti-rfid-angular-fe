@@ -1,0 +1,149 @@
+<div class="modal" [class.show]="showModal" (click)="onModalClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="onClose()">&times;</span>
+    
+
+     <h2 class="modal-title">Portal Login</h2>
+    <!-- Custom Tabs -->
+   <div class="tabs-container">
+  <div class="tabs-header">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'admin'"
+      (click)="activeTab = 'admin'">
+      <i class="pi pi-user"></i>
+      Admin
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'student'"
+      (click)="activeTab = 'student'">
+      <i class="pi pi-users"></i>
+      Student
+    </button>
+  </div>
+
+      <div class="tabs-content">
+        <!-- Admin Tab -->
+        <div *ngIf="activeTab === 'admin'" class="tab-panel">
+
+          <form [formGroup]="adminLoginForm" (ngSubmit)="onAdminLogin()" class="login-form">
+            <div class="form-group">
+              <label for="adminId">Admin ID</label>
+              <input 
+                pInputText 
+                id="adminId" 
+                formControlName="adminId" 
+                placeholder="Enter your Admin ID" 
+                autocomplete="username"
+                [class.invalid]="adminLoginForm.get('adminId')?.invalid && adminLoginForm.get('adminId')?.touched" />
+              <div *ngIf="adminLoginForm.get('adminId')?.invalid && adminLoginForm.get('adminId')?.touched" class="error-message">
+                Admin ID is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="adminPassword">Password</label>
+              <p-password 
+                id="adminPassword" 
+                formControlName="password" 
+                [feedback]="false" 
+                [toggleMask]="true"
+                placeholder="Enter your password" 
+                autocomplete="current-password"
+                [inputStyleClass]="adminLoginForm.get('password')?.invalid && adminLoginForm.get('password')?.touched ? 'invalid' : ''" />
+              <div *ngIf="adminLoginForm.get('password')?.invalid && adminLoginForm.get('password')?.touched" class="error-message">
+                Password is required
+              </div>
+            </div>
+
+            <div class="checkbox-container">
+              <p-checkbox 
+                formControlName="rememberMe" 
+                [binary]="true" 
+                inputId="adminRememberMe">
+              </p-checkbox>
+              <label for="adminRememberMe" class="checkbox-label">Remember me</label>
+            </div>
+
+            <button 
+              pButton 
+              type="submit" 
+              class="login-submit-btn" 
+              [disabled]="isAdminLoading"
+              [label]="isAdminLoading ? 'Logging in...' : 'Login to Portal'"
+              [icon]="isAdminLoading ? 'pi pi-spin pi-spinner' : ''">
+            </button>
+          </form>
+
+          <div class="modal-footer">
+            <p>Need help accessing your account?</p>
+            <a href="mailto:admin@schoolportal.com" class="support-link" title="admin@schoolportal.com">
+              Contact Admin Support
+            </a>
+          </div>
+        </div>
+
+        <!-- Student Tab -->
+        <div *ngIf="activeTab === 'student'" class="tab-panel">
+
+          <form [formGroup]="studentLoginForm" (ngSubmit)="onStudentLogin()" class="login-form">
+            <div class="form-group">
+              <label for="studentId">Student ID</label>
+              <input 
+                pInputText 
+                id="studentId" 
+                formControlName="studentId" 
+                placeholder="Enter your Student ID" 
+                autocomplete="username"
+                [class.invalid]="studentLoginForm.get('studentId')?.invalid && studentLoginForm.get('studentId')?.touched" />
+              <div *ngIf="studentLoginForm.get('studentId')?.invalid && studentLoginForm.get('studentId')?.touched" class="error-message">
+                Student ID is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="studentPassword">Password</label>
+              <p-password 
+                id="studentPassword" 
+                formControlName="password" 
+                [feedback]="false" 
+                [toggleMask]="true"
+                placeholder="Enter your password" 
+                autocomplete="current-password"
+                [inputStyleClass]="studentLoginForm.get('password')?.invalid && studentLoginForm.get('password')?.touched ? 'invalid' : ''" />
+              <div *ngIf="studentLoginForm.get('password')?.invalid && studentLoginForm.get('password')?.touched" class="error-message">
+                Password is required
+              </div>
+            </div>
+
+            <div class="checkbox-container">
+              <p-checkbox 
+                formControlName="rememberMe" 
+                [binary]="true" 
+                inputId="studentRememberMe">
+              </p-checkbox>
+              <label for="studentRememberMe" class="checkbox-label">Remember me</label>
+            </div>
+
+            <button 
+              pButton 
+              type="submit" 
+              class="login-submit-btn" 
+              [disabled]="isStudentLoading"
+              [label]="isStudentLoading ? 'Logging in...' : 'Login to Portal'"
+              [icon]="isStudentLoading ? 'pi pi-spin pi-spinner' : ''">
+            </button>
+          </form>
+
+          <div class="modal-footer">
+            <p>Need help accessing your account?</p>
+            <a href="mailto:admin@dit-rfid.arvin-stg.org" class="support-link" title="admin@dit-rfid.arvin-stg.org">
+              Contact Admin Support
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
