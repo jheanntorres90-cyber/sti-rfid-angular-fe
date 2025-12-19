@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -29,7 +30,9 @@ export class LoginModalComponent {
   isAdminLoading = false;
   isStudentLoading = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder
+    , private router: Router
+  ) {
     // Admin form
     this.adminLoginForm = this.fb.group({
       adminId: ['', [Validators.required]],
@@ -87,7 +90,11 @@ export class LoginModalComponent {
 
         console.log('Admin login successful:', this.adminLoginForm.value.adminId);
         this.onClose();
-      }, 2000);
+         
+        this.showModal = false;
+        this.router.navigate  (['/admin/ats-dashboard']);
+        
+      }, 1500);
     } else {
       Object.keys(this.adminLoginForm.controls).forEach(key => {
         this.adminLoginForm.get(key)?.markAsTouched();
@@ -114,6 +121,8 @@ export class LoginModalComponent {
 
         console.log('Student login successful:', studentId);
         this.onClose();
+        this.showModal = false;
+        this.router.navigate  (['/admin/ats-dashboard']);
       }, 2000);
     } else {
       Object.keys(this.studentLoginForm.controls).forEach(key => {
