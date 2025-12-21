@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { ManageAdminDialog } from './manage-admin-dialog';
 
-import {LandingComponent } from './landing';
-
-describe('Landing', () => {
-  let component: LandingComponent;
-  let fixture: ComponentFixture<LandingComponent>;
+describe('ManageAdminDialog', () => {
+  let component: ManageAdminDialog;
+  let fixture: ComponentFixture<ManageAdminDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LandingComponent]
+      imports: [ManageAdminDialog]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LandingComponent);
+    fixture = TestBed.createComponent(ManageAdminDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

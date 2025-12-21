@@ -1,0 +1,195 @@
+<!-- dashboard.component.html -->
+<div class="dashboard">
+  <!-- Welcome Section - exact same -->
+  <div class="welcome-section">
+    <div class="welcome-content">
+      <h2>Welcome back, Admin</h2>
+      <p>Here's the latest updates from STI</p>
+    </div>
+  </div>
+
+  <!-- Stats Grid - exact same structure -->
+  <div class="stats-grid">
+    <div class="stat-card" (click)="handleStatCardClick($event)">
+      <div class="stat-icon blue-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-value">{{ animatedStats.totalStudents | number }}</div>
+      <div class="stat-label">Total Students</div>
+      <div class="stat-change positive">↗ +12 this week</div>
+    </div>
+    
+    <div class="stat-card" (click)="handleStatCardClick($event)">
+      <div class="stat-icon green-icon">
+        <i class="fas fa-user-check"></i>
+      </div>
+      <div class="stat-value">{{ animatedStats.activeStudents | number }}</div>
+      <div class="stat-label">Active Students</div>
+      <div class="stat-change positive">95.5% active rate</div>
+    </div>
+    
+    <div class="stat-card" (click)="handleStatCardClick($event)">
+      <div class="stat-icon yellow-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <div class="stat-value">{{ animatedStats.gradesEntered | number }}</div>
+      <div class="stat-label">Grades Entered</div>
+      <div class="stat-change positive">↗ 92% completion</div>
+    </div>
+    
+    <div class="stat-card" (click)="handleStatCardClick($event)">
+      <div class="stat-icon red-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="stat-value">{{ animatedStats.pendingApproval }}</div>
+      <div class="stat-label">Pending Approval</div>
+      <div class="stat-change negative">Need review</div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid - exact same structure -->
+  <div class="content-grid">
+    <!-- Announcements Preview -->
+    <div class="content-column">
+      <div class="section-header">
+        <h3>Latest Announcements</h3>
+        <a [routerLink]="['/announcements']" class="view-all">View All</a>
+      </div>
+      
+      <div class="announcements-preview">
+        <div class="announcement-card featured" (click)="handleAnnouncementClick($event)">
+          <div class="announcement-badge">
+            <i class="fas fa-star"></i>
+            Featured
+          </div>
+          <div class="announcement-content">
+            <h4 class="announcement-title">Midterm Examination Schedule - October 2023</h4>
+            <p class="announcement-text">Midterm examinations will be held from October 15-19, 2023. All students are required to check their respective schedules on the student portal.</p>
+            <div class="announcement-meta">
+              <span class="meta-item">
+                <i class="fas fa-calendar"></i>
+                Today, 10:30 AM
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-eye"></i>
+                1,247 views
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="announcement-card" (click)="handleAnnouncementClick($event)">
+          <div class="announcement-badge priority-high">
+            <i class="fas fa-exclamation-circle"></i>
+            Important
+          </div>
+          <div class="announcement-content">
+            <h4 class="announcement-title">Library System Maintenance</h4>
+            <p class="announcement-text">The library management system will undergo maintenance this weekend. Online services will be temporarily unavailable.</p>
+            <div class="announcement-meta">
+              <span class="meta-item">
+                <i class="fas fa-calendar"></i>
+                Yesterday, 2:15 PM
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-eye"></i>
+                892 views
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="announcement-card" (click)="handleAnnouncementClick($event)">
+          <div class="announcement-badge">
+            <i class="fas fa-info-circle"></i>
+            Update
+          </div>
+          <div class="announcement-content">
+            <h4 class="announcement-title">Research Symposium 2023</h4>
+            <p class="announcement-text">Annual Research Symposium scheduled for November 20th. Submit research proposals by October 30th.</p>
+            <div class="announcement-meta">
+              <span class="meta-item">
+                <i class="fas fa-calendar"></i>
+                Oct 5, 9:45 AM
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-eye"></i>
+                1,045 views
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="content-column">
+      <div class="section-header">
+        <h3>Recent Activities</h3>
+        <a href="#" class="view-all" (click)="onViewAllActivities($event)">View All</a>
+      </div>
+      
+      <div class="recent-activities">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">2 minutes ago</div>
+            <div class="activity-text">New student registered: <strong>John Doe</strong></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">15 minutes ago</div>
+            <div class="activity-text">Payment received: <strong>₱15,000</strong></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-edit"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">1 hour ago</div>
+            <div class="activity-text">Grades updated for <strong>CS101</strong></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">2 hours ago</div>
+            <div class="activity-text">New announcement posted: <strong>Midterm Schedule</strong></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-id-card"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">3 hours ago</div>
+            <div class="activity-text">Gate attendance recorded for <strong>Jane Smith</strong></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-chalkboard"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-time">4 hours ago</div>
+            <div class="activity-text">Class attendance submitted by <strong>Dr. Rodriguez</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

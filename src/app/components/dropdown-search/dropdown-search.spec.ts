@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { DropdownSearch } from './dropdown-search';
 
-import {LandingComponent } from './landing';
-
-describe('Landing', () => {
-  let component: LandingComponent;
-  let fixture: ComponentFixture<LandingComponent>;
+describe('DropdownSearch', () => {
+  let component: DropdownSearch;
+  let fixture: ComponentFixture<DropdownSearch>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LandingComponent]
+      imports: [DropdownSearch]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LandingComponent);
+    fixture = TestBed.createComponent(DropdownSearch);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

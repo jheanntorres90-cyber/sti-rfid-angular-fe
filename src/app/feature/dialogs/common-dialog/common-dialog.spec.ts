@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { CommonDialog } from './common-dialog';
 
-import {LandingComponent } from './landing';
-
-describe('Landing', () => {
-  let component: LandingComponent;
-  let fixture: ComponentFixture<LandingComponent>;
+describe('CommonDialog', () => {
+  let component: CommonDialog;
+  let fixture: ComponentFixture<CommonDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LandingComponent]
+      imports: [CommonDialog]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LandingComponent);
+    fixture = TestBed.createComponent(CommonDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

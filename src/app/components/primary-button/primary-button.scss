@@ -1,0 +1,14 @@
+:host ::ng-deep button.p-button {
+  width: 120px !important;
+    // 🎯 SOLUTION: I-set ang fixed height
+  height: 40px !important; // Piliin ang height na pareho sa ibang buttons mo
+  
+  // 🎯 SOLUTION: Siguraduhin na ang text ay mananatili sa isang linya
+  white-space: nowrap;
+  background-color: var(--slate-950);
+  border: none !important;
+
+   &:hover {
+    background-color: var(--blue-900) !important;
+  }
+}
