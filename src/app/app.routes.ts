@@ -30,6 +30,10 @@ export const routes: Routes = [
       { path: 'manage-admin',
          loadComponent: () => import('./feature/admin/manage-admin/manage-admin.component').then(m => m.ManageAdminComponent) 
       },
+      {path: 'grade-records',
+         loadComponent: () => import('./feature/gps/admin/records-management/gps-records.component').then(m => m.AdminGpsDashboardComponent)
+
+      }
     ]
   },
 
