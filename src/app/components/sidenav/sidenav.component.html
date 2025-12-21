@@ -58,7 +58,7 @@
         }
       </div>
     </div>
-
+    
     <!-- Grading Portal with dropdown -->
     <div>
       <button
@@ -78,6 +78,8 @@
         </span>
       </button>
 
+        <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1"></div>
+
       <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
         @for (page of gpsMenu; track page.path) {
         <a
@@ -88,8 +90,17 @@
           {{ page.label }}
         </a>
         }
+
+          <a
+          routerLink="/admin/grade-records"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700"
+        >
+          Records Management
+        </a>
       </div>
     </div>
+
 
      <div>
       <button

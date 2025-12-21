@@ -1,0 +1,1264 @@
+<!-- Alert Messages -->
+<div class="alert-container">
+  <div *ngIf="alert.show" class="alert" [ngClass]="{
+    'alert-success': alert.type === 'success',
+    'alert-error': alert.type === 'error',
+    'alert-warning': alert.type === 'warning',
+    'alert-info': alert.type === 'info'
+  }">
+    <i class="fas" [ngClass]="{
+      'fa-check-circle': alert.type === 'success',
+      'fa-exclamation-circle': alert.type === 'error' || alert.type === 'info',
+      'fa-exclamation-triangle': alert.type === 'warning'
+    }"></i>
+    <div class="alert-content">
+      <span>{{ alert.message }}</span>
+      <button class="alert-close" (click)="alert.show = false">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue-icon">
+      <i class="fas fa-user-graduate"></i>
+    </div>
+    <div class="stat-value" id="totalStudents">{{ stats.totalStudents }}</div>
+    <div class="stat-label">Total Students</div>
+    <div class="stat-change positive">↗ +12 this week</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon green-icon">
+      <i class="fas fa-chalkboard-teacher"></i>
+    </div>
+    <div class="stat-value" id="totalTeachers">{{ stats.totalTeachers }}</div>
+    <div class="stat-label">Total Teachers</div>
+    <div class="stat-change positive">↗ +2 this month</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon yellow-icon">
+      <i class="fas fa-user-check"></i>
+    </div>
+    <div class="stat-value" id="activeStudents">{{ stats.activeStudents }}</div>
+    <div class="stat-label">Active Students</div>
+    <div class="stat-change positive">95.5% active rate</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon red-icon">
+      <i class="fas fa-trash"></i>
+    </div>
+    <div class="stat-value" id="deletedRecords">{{ stats.deletedRecords }}</div>
+    <div class="stat-label">Deleted Records</div>
+    <div class="stat-change negative">↘ -3 restored</div>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="card">
+  <div class="tab-navigation">
+    <button class="tab-btn" [class.active]="activeTab === 'students'" (click)="switchTab('students')">Student Records</button>
+    <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="switchTab('teachers')">Teacher Records</button>
+    <button class="tab-btn" [class.active]="activeTab === 'trash'" (click)="switchTab('trash')">Trash Bin</button>
+  </div>
+  
+  <!-- Students Tab -->
+  <div class="tab-content" [class.active]="activeTab === 'students'">
+    <div class="card-header">
+      <div class="card-title">Student Records</div>
+      <div class="view-all">Manage student information</div>
+    </div>
+    
+    <div class="card-content">
+      <!-- Search and Actions Row -->
+      <div class="search-actions-row">
+        <div class="search-container full-width">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="search-input" placeholder="Search by name, student ID, or email..." 
+                 [(ngModel)]="studentSearch" (ngModelChange)="onStudentSearchChange()">
+        </div>
+        
+        <div class="action-buttons-group">
+          <button class="btn btn-primary" (click)="openAddStudentModal()">
+            <i class="fas fa-user-plus"></i> Add Student
+          </button>
+          <button class="btn btn-secondary" (click)="openBulkActionsModal()">
+            <i class="fas fa-edit"></i> Bulk Actions
+          </button>
+          <button class="btn btn-secondary" (click)="showStudentFilters = !showStudentFilters">
+            <i class="fas fa-filter"></i> Filters
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filters Panel -->
+      <div class="filters-panel" [class.active]="showStudentFilters">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label class="form-label">Education Level</label>
+            <select class="form-control" [(ngModel)]="studentFilters.educationLevel">
+              <option>All Levels</option>
+              <option>Senior High</option>
+              <option>College</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Course</label>
+            <select class="form-control" [(ngModel)]="studentFilters.course">
+              <option>All Courses</option>
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Business Administration</option>
+              <option>Engineering</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Year Level</label>
+            <select class="form-control" [(ngModel)]="studentFilters.year">
+              <option>All Years</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" [(ngModel)]="studentFilters.status">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Graduated</option>
+              <option>Dropped</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filter-actions">
+          <button class="btn btn-primary" (click)="applyStudentFilters()">Apply Filters</button>
+          <button class="btn btn-secondary" (click)="clearStudentFilters()">Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Records Table -->
+    <div class="card table-card">
+      <div class="card-header">
+        <div class="card-title">Student Records</div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="selectAllStudents" [(ngModel)]="isAllStudentsSelected" (change)="toggleAllStudents()">
+          <label for="selectAllStudents">Select All</label>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <input type="checkbox" [(ngModel)]="isAllStudentsSelected" (change)="toggleAllStudents()">
+              </th>
+              <th class="student-info-column">Student Info</th>
+              <th class="course-column">Education Level & Course</th>
+              <th class="status-column">Status</th>
+              <th class="balance-column">Balance</th>
+              <th class="date-column">Enrollment Date</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of displayedStudents">
+              <td>
+                <input type="checkbox" class="student-checkbox" 
+                       [checked]="selectedStudents.includes(student.id)"
+                       (change)="toggleStudentSelection(student.id)">
+              </td>
+              <td>
+                <div class="student-info-cell">
+                  <div class="student-avatar">
+                    <img [src]="student.avatar" [alt]="student.firstName" 
+                     (error)="student.avatar = 'https://ui-avatars.com/api/?name=' + this.encodeURI(student.firstName + ' ' + student.lastName) + '&background=1a4b8c&color=fff'">
+                  </div>
+                  <div class="student-details">
+                    <div class="student-name">{{ student.firstName }} {{ student.lastName }}</div>
+                    <div class="student-id">{{ student.id }}</div>
+                    <div class="student-email">{{ student.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="course-info">
+                  <div class="course-name">{{ student.educationLevel }} - {{ student.course }}</div>
+                  <div class="year-level">{{ student.yearLevel }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(student.status)">{{ student.status }}</span>
+              </td>
+              <td>
+                <div class="balance-amount" [class.has-balance]="student.balance > 0" [class.paid]="student.balance === 0">
+                  {{ student.balance > 0 ? ('₱' + student.balance.toLocaleString()) : 'Paid' }}
+                </div>
+              </td>
+              <td>
+                <div class="enrollment-date">
+                  {{ student.enrollmentDate | date:'MMM d, yyyy' }}
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view-btn" (click)="viewStudent(student)" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="action-btn edit-btn" (click)="editStudent(student)" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="softDeleteStudent(student)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          <span>{{ studentPaginationInfo.start }}-{{ studentPaginationInfo.end }}</span> of <span>{{ studentPaginationInfo.total }}</span> students
+        </div>
+        <div class="pagination-controls">
+          <button class="pagination-btn" (click)="previousStudentPage()" [disabled]="currentStudentPage === 1">
+            <i class="fas fa-chevron-left"></i> Previous
+          </button>
+          <div class="pagination-numbers">
+            <button class="pagination-btn" *ngFor="let page of [].constructor(studentTotalPages); let i = index"
+                    [class.active]="currentStudentPage === i + 1"
+                    (click)="goToStudentPage(i + 1)">
+              {{ i + 1 }}
+            </button>
+          </div>
+          <button class="pagination-btn" (click)="nextStudentPage()" [disabled]="currentStudentPage === studentTotalPages">
+            Next <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Teachers Tab -->
+  <div class="tab-content" [class.active]="activeTab === 'teachers'">
+    <div class="card-header">
+      <div class="card-title">Teacher Records</div>
+      <div class="view-all">Manage teacher information</div>
+    </div>
+    
+    <div class="card-content">
+      <!-- Search and Actions Row -->
+      <div class="search-actions-row">
+        <div class="search-container full-width">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="search-input" placeholder="Search by name, teacher ID, or email..." 
+                 [(ngModel)]="teacherSearch" (ngModelChange)="onTeacherSearchChange()">
+        </div>
+        
+        <div class="action-buttons-group">
+          <button class="btn btn-primary" (click)="openAddTeacherModal()">
+            <i class="fas fa-user-plus"></i> Add Teacher
+          </button>
+          <button class="btn btn-secondary" (click)="openBulkActionsModal()">
+            <i class="fas fa-edit"></i> Bulk Actions
+          </button>
+          <button class="btn btn-secondary" (click)="showTeacherFilters = !showTeacherFilters">
+            <i class="fas fa-filter"></i> Filters
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filters Panel -->
+      <div class="filters-panel" [class.active]="showTeacherFilters">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label class="form-label">Employment Type</label>
+            <select class="form-control" [(ngModel)]="teacherFilters.employmentType">
+              <option>All Types</option>
+              <option>Full-time</option>
+              <option>Part-time</option>
+              <option>Contractual</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Specialization</label>
+            <select class="form-control" [(ngModel)]="teacherFilters.specialization">
+              <option>All Specializations</option>
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Business Administration</option>
+              <option>Engineering</option>
+              <option>Mathematics</option>
+              <option>English</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Designation</label>
+            <select class="form-control" [(ngModel)]="teacherFilters.designation">
+              <option>All Designations</option>
+              <option>Professor</option>
+              <option>Associate Professor</option>
+              <option>Assistant Professor</option>
+              <option>Instructor</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" [(ngModel)]="teacherFilters.status">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>On Leave</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filter-actions">
+          <button class="btn btn-primary" (click)="applyTeacherFilters()">Apply Filters</button>
+          <button class="btn btn-secondary" (click)="clearTeacherFilters()">Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Records Table -->
+    <div class="card table-card">
+      <div class="card-header">
+        <div class="card-title">Teacher Records</div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="selectAllTeachers" [(ngModel)]="isAllTeachersSelected" (change)="toggleAllTeachers()">
+          <label for="selectAllTeachers">Select All</label>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="teacher-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <input type="checkbox" [(ngModel)]="isAllTeachersSelected" (change)="toggleAllTeachers()">
+              </th>
+              <th class="student-info-column">Teacher Info</th>
+              <th class="course-column">Employment Details</th>
+              <th class="status-column">Status</th>
+              <th class="balance-column">Specialization</th>
+              <th class="date-column">Hire Date</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let teacher of displayedTeachers">
+              <td>
+                <input type="checkbox" class="teacher-checkbox" 
+                       [checked]="selectedTeachers.includes(teacher.id)"
+                       (change)="toggleTeacherSelection(teacher.id)">
+              </td>
+              <td>
+                <div class="teacher-info-cell">
+                  <div class="teacher-avatar">
+                    <img [src]="teacher.avatar" [alt]="teacher.firstName" 
+     (error)="teacher.avatar = 'https://ui-avatars.com/api/?name=' + this.encodeURI(teacher.firstName + ' ' + teacher.lastName) + '&background=1a4b8c&color=fff'">
+                  </div>
+                  <div class="teacher-details">
+                    <div class="teacher-name">{{ teacher.firstName }} {{ teacher.lastName }}</div>
+                    <div class="teacher-id">{{ teacher.id }}</div>
+                    <div class="teacher-email">{{ teacher.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="course-info">
+                  <div class="course-name">{{ teacher.employmentType }} - {{ teacher.designation }}</div>
+                  <div class="year-level">{{ teacher.specialization }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(teacher.status)">{{ teacher.status }}</span>
+              </td>
+              <td>
+                <div class="balance-amount">
+                  {{ teacher.specialization }}
+                </div>
+              </td>
+              <td>
+                <div class="enrollment-date">
+                  {{ teacher.hireDate | date:'MMM d, yyyy' }}
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view-btn" (click)="viewTeacher(teacher)" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="action-btn edit-btn" (click)="editTeacher(teacher)" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="softDeleteTeacher(teacher)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          <span>{{ teacherPaginationInfo.start }}-{{ teacherPaginationInfo.end }}</span> of <span>{{ teacherPaginationInfo.total }}</span> teachers
+        </div>
+        <div class="pagination-controls">
+          <button class="pagination-btn" (click)="previousTeacherPage()" [disabled]="currentTeacherPage === 1">
+            <i class="fas fa-chevron-left"></i> Previous
+          </button>
+          <div class="pagination-numbers">
+            <button class="pagination-btn" *ngFor="let page of [].constructor(teacherTotalPages); let i = index"
+                    [class.active]="currentTeacherPage === i + 1"
+                    (click)="goToTeacherPage(i + 1)">
+              {{ i + 1 }}
+            </button>
+          </div>
+          <button class="pagination-btn" (click)="nextTeacherPage()" [disabled]="currentTeacherPage === teacherTotalPages">
+            Next <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Trash Bin Tab -->
+  <div class="tab-content" [class.active]="activeTab === 'trash'">
+    <div class="card-header">
+      <div class="card-title">Trash Bin</div>
+      <div class="view-all">Recently deleted records</div>
+    </div>
+    
+    <div class="card-content">
+      <div class="trash-header">
+        <p>Deleted records are kept for 30 days before being permanently removed.</p>
+        <button class="btn empty-trash-btn" (click)="emptyTrash()">
+          <i class="fas fa-trash"></i> Empty Trash
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th>Record Type</th>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Deleted Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of trashData">
+              <td>{{ item.type }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.deletedDate | date:'MMM d, yyyy' }}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn restore-btn" (click)="restoreRecord(item)" title="Restore">
+                    <i class="fas fa-undo"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="permanentlyDeleteRecord(item)" title="Permanently Delete">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal" [class.active]="showAddStudentModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Student</h3>
+      <button class="modal-close" (click)="closeAddStudentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="student-form" (ngSubmit)="addStudent()">
+        <div class="form-section">
+          <h4 class="section-title">Personal Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.middleName" name="middleName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" class="form-control" [(ngModel)]="newStudent.dob" name="dob" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <select class="form-control" [(ngModel)]="newStudent.gender" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Civil Status</label>
+              <select class="form-control" [(ngModel)]="newStudent.civilStatus" name="civilStatus">
+                <option value="single">Single</option>
+                <option value="married">Married</option>
+                <option value="divorced">Divorced</option>
+                <option value="widowed">Widowed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Contact Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" [(ngModel)]="newStudent.email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" [(ngModel)]="newStudent.phone" name="phone" required>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Address *</label>
+              <textarea class="form-control" [(ngModel)]="newStudent.address" name="address" rows="3" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Academic Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Student ID *</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.studentId" name="studentId" placeholder="Auto-generated if empty">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Education Level *</label>
+              <select class="form-control" [(ngModel)]="newStudent.educationLevel" name="educationLevel" required>
+                <option value="">Select Level</option>
+                <option value="senior-high">Senior High</option>
+                <option value="college">College</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Course *</label>
+              <select class="form-control" [(ngModel)]="newStudent.course" name="course" required>
+                <option value="">Select Course</option>
+                <option value="cs">Computer Science</option>
+                <option value="it">Information Technology</option>
+                <option value="ba">Business Administration</option>
+                <option value="eng">Engineering</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Year Level *</label>
+              <select class="form-control" [(ngModel)]="newStudent.yearLevel" name="yearLevel" required>
+                <option value="">Select Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Enrollment Date *</label>
+              <input type="date" class="form-control" [(ngModel)]="newStudent.enrollmentDate" name="enrollmentDate" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Emergency Contact</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Contact Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.emergencyName" name="emergencyName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Relationship *</label>
+              <input type="text" class="form-control" [(ngModel)]="newStudent.emergencyRelationship" name="emergencyRelationship" 
+                     required placeholder="e.g., Parent, Guardian, Spouse">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Phone *</label>
+              <input type="tel" class="form-control" [(ngModel)]="newStudent.emergencyPhone" name="emergencyPhone" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Email</label>
+              <input type="email" class="form-control" [(ngModel)]="newStudent.emergencyEmail" name="emergencyEmail">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Student</button>
+          <button type="button" class="btn btn-secondary" (click)="closeAddStudentModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal" [class.active]="showAddTeacherModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Teacher</h3>
+      <button class="modal-close" (click)="closeAddTeacherModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="teacher-form" (ngSubmit)="addTeacher()">
+        <div class="form-section">
+          <h4 class="section-title">Personal Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newTeacher.firstName" name="teacherFirstName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newTeacher.lastName" name="teacherLastName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newTeacher.middleName" name="teacherMiddleName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" class="form-control" [(ngModel)]="newTeacher.dob" name="teacherDob" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <select class="form-control" [(ngModel)]="newTeacher.gender" name="teacherGender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Contact Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" [(ngModel)]="newTeacher.email" name="teacherEmail" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" [(ngModel)]="newTeacher.phone" name="teacherPhone" required>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Address *</label>
+              <textarea class="form-control" [(ngModel)]="newTeacher.address" name="teacherAddress" rows="3" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Employment Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Teacher ID *</label>
+              <input type="text" class="form-control" [(ngModel)]="newTeacher.teacherId" name="teacherId" placeholder="Auto-generated if empty">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Employment Type *</label>
+              <select class="form-control" [(ngModel)]="newTeacher.employmentType" name="employmentType" required>
+                <option value="">Select Type</option>
+                <option value="full-time">Full-time</option>
+                <option value="part-time">Part-time</option>
+                <option value="contractual">Contractual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization *</label>
+              <select class="form-control" [(ngModel)]="newTeacher.specialization" name="specialization" required>
+                <option value="">Select Specialization</option>
+                <option value="cs">Computer Science</option>
+                <option value="it">Information Technology</option>
+                <option value="ba">Business Administration</option>
+                <option value="eng">Engineering</option>
+                <option value="math">Mathematics</option>
+                <option value="english">English</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Designation *</label>
+              <select class="form-control" [(ngModel)]="newTeacher.designation" name="designation" required>
+                <option value="">Select Designation</option>
+                <option value="professor">Professor</option>
+                <option value="associate-professor">Associate Professor</option>
+                <option value="assistant-professor">Assistant Professor</option>
+                <option value="instructor">Instructor</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status *</label>
+              <select class="form-control" [(ngModel)]="newTeacher.status" name="teacherStatus" required>
+                <option value="">Select Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="on-leave">On Leave</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hire Date *</label>
+              <input type="date" class="form-control" [(ngModel)]="newTeacher.hireDate" name="hireDate" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Teacher</button>
+          <button type="button" class="btn btn-secondary" (click)="closeAddTeacherModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Actions Modal -->
+<div class="modal" [class.active]="showBulkActionsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Bulk Actions</h3>
+      <button class="modal-close" (click)="closeBulkActionsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Select Action</label>
+        <select [(ngModel)]="bulkActionType" class="form-control" (change)="onBulkActionTypeChange()">
+          <option value="">Choose an action</option>
+          <option value="status">Update Status</option>
+          <option value="course">Transfer Course</option>
+          <option value="year">Update Year Level</option>
+          <option value="export">Export Selected</option>
+          <option value="delete">Delete Selected</option>
+        </select>
+      </div>
+      
+      <div *ngIf="showBulkActionDetails">
+        <!-- Dynamic content based on selected action -->
+        <div *ngIf="bulkActionType === 'status'">
+          <div class="form-group">
+            <label class="form-label">New Status</label>
+            <select class="form-control" [(ngModel)]="bulkActionDetails.newStatus">
+              <option *ngIf="activeTab === 'students'">Active</option>
+              <option *ngIf="activeTab === 'students'">Inactive</option>
+              <option *ngIf="activeTab === 'students'">Graduated</option>
+              <option *ngIf="activeTab === 'students'">Dropped</option>
+              <option *ngIf="activeTab === 'teachers'">Active</option>
+              <option *ngIf="activeTab === 'teachers'">Inactive</option>
+              <option *ngIf="activeTab === 'teachers'">On Leave</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="bulkActionType === 'course' && activeTab === 'students'">
+          <div class="form-group">
+            <label class="form-label">Transfer to Course</label>
+            <select class="form-control" [(ngModel)]="bulkActionDetails.newCourse">
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Business Administration</option>
+              <option>Engineering</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="bulkActionType === 'course' && activeTab === 'teachers'">
+          <div class="form-group">
+            <label class="form-label">Update Specialization</label>
+            <select class="form-control" [(ngModel)]="bulkActionDetails.newSpecialization">
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Business Administration</option>
+              <option>Engineering</option>
+              <option>Mathematics</option>
+              <option>English</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="bulkActionType === 'year'">
+          <div class="form-group">
+            <label class="form-label">Update Year Level</label>
+            <select class="form-control" [(ngModel)]="bulkActionDetails.newYear">
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="bulkActionType === 'export'">
+          <div class="form-group">
+            <label class="form-label">Export Format</label>
+            <select class="form-control" [(ngModel)]="bulkActionDetails.exportFormat">
+              <option value="csv">CSV</option>
+              <option value="excel">Excel</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="bulkActionType === 'delete'">
+          <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <div>
+              <h4>Warning</h4>
+              <p>This action will move the selected records to trash and can be undone.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-primary" (click)="processBulkAction()">Apply Action</button>
+        <button class="btn btn-secondary" (click)="closeBulkActionsModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div class="modal" [class.active]="showEditStudentModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Student</h3>
+      <button class="modal-close" (click)="closeEditStudentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="student-form" *ngIf="editingStudent" (ngSubmit)="updateStudent()">
+        <div class="form-section">
+          <h4 class="section-title">Personal Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingStudent.firstName" name="editFirstName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingStudent.lastName" name="editLastName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editingStudent.middleName" name="editMiddleName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" class="form-control" [(ngModel)]="editingStudent.dateOfBirth" name="editDob" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <select class="form-control" [(ngModel)]="editingStudent.gender" name="editGender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Civil Status</label>
+              <select class="form-control" [(ngModel)]="editingStudent.civilStatus" name="editCivilStatus">
+                <option value="single">Single</option>
+                <option value="married">Married</option>
+                <option value="divorced">Divorced</option>
+                <option value="widowed">Widowed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Contact Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" [(ngModel)]="editingStudent.email" name="editEmail" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" [(ngModel)]="editingStudent.phone" name="editPhone" required>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Address *</label>
+              <textarea class="form-control" [(ngModel)]="editingStudent.address" name="editAddress" rows="3" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Academic Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Student ID *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingStudent.id" name="editStudentId" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Education Level *</label>
+              <select class="form-control" [(ngModel)]="editingStudent.educationLevel" name="editEducationLevel" required>
+                <option value="">Select Level</option>
+                <option value="senior-high">Senior High</option>
+                <option value="college">College</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Course *</label>
+              <select class="form-control" [(ngModel)]="editingStudent.course" name="editCourse" required>
+                <option value="">Select Course</option>
+                <option value="cs">Computer Science</option>
+                <option value="it">Information Technology</option>
+                <option value="ba">Business Administration</option>
+                <option value="eng">Engineering</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Year Level *</label>
+              <select class="form-control" [(ngModel)]="editingStudent.yearLevel" name="editYearLevel" required>
+                <option value="">Select Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status *</label>
+              <select class="form-control" [(ngModel)]="editingStudent.status" name="editStatus" required>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="graduated">Graduated</option>
+                <option value="dropped">Dropped</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Balance</label>
+              <input type="number" class="form-control" [(ngModel)]="editingStudent.balance" name="editBalance" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Update Student</button>
+          <button type="button" class="btn btn-secondary" (click)="closeEditStudentModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="softDeleteStudent(editingStudent!)" style="margin-left: auto;">
+            <i class="fas fa-trash"></i> Move to Trash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal" [class.active]="showEditTeacherModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Teacher</h3>
+      <button class="modal-close" (click)="closeEditTeacherModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="teacher-form" *ngIf="editingTeacher" (ngSubmit)="updateTeacher()">
+        <div class="form-section">
+          <h4 class="section-title">Personal Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingTeacher.firstName" name="editTeacherFirstName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingTeacher.lastName" name="editTeacherLastName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editingTeacher.middleName" name="editTeacherMiddleName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" class="form-control" [(ngModel)]="editingTeacher.dateOfBirth" name="editTeacherDob" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <select class="form-control" [(ngModel)]="editingTeacher.gender" name="editTeacherGender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Contact Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" [(ngModel)]="editingTeacher.email" name="editTeacherEmail" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" [(ngModel)]="editingTeacher.phone" name="editTeacherPhone" required>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Address *</label>
+              <textarea class="form-control" [(ngModel)]="editingTeacher.address" name="editTeacherAddress" rows="3" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">Employment Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Teacher ID *</label>
+              <input type="text" class="form-control" [(ngModel)]="editingTeacher.id" name="editTeacherId" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Employment Type *</label>
+              <select class="form-control" [(ngModel)]="editingTeacher.employmentType" name="editEmploymentType" required>
+                <option value="">Select Type</option>
+                <option value="full-time">Full-time</option>
+                <option value="part-time">Part-time</option>
+                <option value="contractual">Contractual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization *</label>
+              <select class="form-control" [(ngModel)]="editingTeacher.specialization" name="editSpecialization" required>
+                <option value="">Select Specialization</option>
+                <option value="cs">Computer Science</option>
+                <option value="it">Information Technology</option>
+                <option value="ba">Business Administration</option>
+                <option value="eng">Engineering</option>
+                <option value="math">Mathematics</option>
+                <option value="english">English</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Designation *</label>
+              <select class="form-control" [(ngModel)]="editingTeacher.designation" name="editDesignation" required>
+                <option value="">Select Designation</option>
+                <option value="professor">Professor</option>
+                <option value="associate-professor">Associate Professor</option>
+                <option value="assistant-professor">Assistant Professor</option>
+                <option value="instructor">Instructor</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status *</label>
+              <select class="form-control" [(ngModel)]="editingTeacher.status" name="editTeacherStatus" required>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="on-leave">On Leave</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Update Teacher</button>
+          <button type="button" class="btn btn-secondary" (click)="closeEditTeacherModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="softDeleteTeacher(editingTeacher!)" style="margin-left: auto;">
+            <i class="fas fa-trash"></i> Move to Trash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Student Details Modal -->
+<div class="modal" [class.active]="showStudentDetailsModal">
+  <div class="modal-content" *ngIf="viewingStudent">
+    <div class="modal-header">
+      <h3 class="modal-title">Student Details</h3>
+      <button class="modal-close" (click)="closeStudentDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="student-detail-header">
+        <div class="detail-avatar">
+          <img [src]="viewingStudent.avatar" [alt]="viewingStudent.firstName" 
+     (error)="viewingStudent.avatar = 'https://ui-avatars.com/api/?name=' + this.encodeURI(viewingStudent.firstName + ' ' + viewingStudent.lastName) + '&background=1a4b8c&color=fff'">
+        </div>
+        <div class="detail-name">
+          <h2>{{ viewingStudent.firstName }} {{ viewingStudent.lastName }}</h2>
+          <p>{{ viewingStudent.id }} • {{ viewingStudent.educationLevel }} • {{ viewingStudent.course }} • {{ viewingStudent.yearLevel }}</p>
+          <span class="status-badge" [ngClass]="getStatusClass(viewingStudent.status)">{{ viewingStudent.status }}</span>
+        </div>
+      </div>
+      
+      <div class="detail-sections">
+        <div class="detail-section">
+          <h4>Personal Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Full Name</label>
+              <span>{{ viewingStudent.firstName }} {{ viewingStudent.middleName }} {{ viewingStudent.lastName }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Email</label>
+              <span>{{ viewingStudent.email }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Phone</label>
+              <span>{{ viewingStudent.phone }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Academic Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Education Level</label>
+              <span>{{ viewingStudent.educationLevel }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Course</label>
+              <span>{{ viewingStudent.course }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Year Level</label>
+              <span>{{ viewingStudent.yearLevel }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Enrollment Date</label>
+              <span>{{ viewingStudent.enrollmentDate | date:'longDate' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Balance</label>
+              <span [class.has-balance]="viewingStudent.balance > 0" [class.paid]="viewingStudent.balance === 0">
+                {{ viewingStudent.balance > 0 ? ('₱' + viewingStudent.balance.toLocaleString()) : 'Paid in Full' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeStudentDetailsModal()">Close</button>
+      <button class="btn btn-primary" (click)="editStudent(viewingStudent); closeStudentDetailsModal();">Edit Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher Details Modal -->
+<div class="modal" [class.active]="showTeacherDetailsModal">
+  <div class="modal-content" *ngIf="viewingTeacher">
+    <div class="modal-header">
+      <h3 class="modal-title">Teacher Details</h3>
+      <button class="modal-close" (click)="closeTeacherDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="teacher-detail-header">
+        <div class="detail-avatar">
+         <img [src]="viewingTeacher.avatar" [alt]="viewingTeacher.firstName" 
+     (error)="viewingTeacher.avatar = 'https://ui-avatars.com/api/?name=' + this.encodeURI(viewingTeacher.firstName + ' ' + viewingTeacher.lastName) + '&background=1a4b8c&color=fff'">
+        </div>
+        <div class="detail-name">
+          <h2>{{ viewingTeacher.firstName }} {{ viewingTeacher.lastName }}</h2>
+          <p>{{ viewingTeacher.id }} • {{ viewingTeacher.designation }}</p>
+          <span class="status-badge" [ngClass]="getStatusClass(viewingTeacher.status)">{{ viewingTeacher.status }}</span>
+        </div>
+      </div>
+      
+      <div class="detail-sections">
+        <div class="detail-section">
+          <h4>Personal Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Full Name</label>
+              <span>{{ viewingTeacher.firstName }} {{ viewingTeacher.middleName }} {{ viewingTeacher.lastName }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Email</label>
+              <span>{{ viewingTeacher.email }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Phone</label>
+              <span>{{ viewingTeacher.phone }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Employment Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Employment Type</label>
+              <span>{{ viewingTeacher.employmentType }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Designation</label>
+              <span>{{ viewingTeacher.designation }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Specialization</label>
+              <span>{{ viewingTeacher.specialization }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Hire Date</label>
+              <span>{{ viewingTeacher.hireDate | date:'longDate' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeTeacherDetailsModal()">Close</button>
+      <button class="btn btn-primary" (click)="editTeacher(viewingTeacher); closeTeacherDetailsModal();">Edit Teacher</button>
+    </div>
+  </div>
+</div>

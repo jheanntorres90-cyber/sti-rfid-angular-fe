@@ -36,3 +36,5 @@ export const GPS_MENUS: Record<string, MenuItem[]> = {
     { label: 'Dashboard', path: '/parent/gps-dashboard' },
   ],
 };
+
+
