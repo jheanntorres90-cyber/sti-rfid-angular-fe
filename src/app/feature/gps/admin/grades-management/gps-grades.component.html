@@ -1,0 +1,522 @@
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Dashboard Content -->
+  <div class="dashboard">
+    <!-- Alert Messages -->
+    <div class="alert-container">
+      <div *ngFor="let alert of alerts" 
+           [class]="'alert alert-' + alert.type">
+        <i [class]="getAlertIcon(alert.type)"></i>
+        <span>{{alert.message}}</span>
+        <button (click)="removeAlert(alert.id)" 
+                style="margin-left: auto; background: none; border: none; cursor: pointer; color: inherit;">✕</button>
+      </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <div class="stat-value">2,847</div>
+        <div class="stat-label">Total Grades Entered</div>
+        <div class="stat-change" style="color: #43a047;">↗ 92% completion</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon yellow-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-value">156</div>
+        <div class="stat-label">Pending Grades</div>
+        <div class="stat-change" style="color: #e6b400;">Awaiting input</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon green-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-value">3.42</div>
+        <div class="stat-label">Average GPA</div>
+        <div class="stat-change" style="color: #43a047;">↗ +0.15 from last sem</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon red-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-value">12</div>
+        <div class="stat-label">Pending Approval</div>
+        <div class="stat-change" style="color: #e53935;">Need review</div>
+      </div>
+    </div>
+
+    <!-- Grade Management Tabs -->
+    <div class="tabs-container">
+    <div class="tabs-header">
+        <!-- Grade Approval Tab -->
+      <button class="tab-btn" 
+        [class.active]="activeTab === 'grade-approval'"
+        (click)="switchTab('grade-approval')"
+        [style.color]="activeTab === 'grade-approval' ? 'var(--primary-blue)' : '#666666'">
+         <i class="fas fa-check-circle" 
+        [style.color]="activeTab === 'grade-approval' ? 'var(--primary-blue)' : '#666666'"></i>
+          Grade Approval
+        <span class="tab-badge">{{pendingApprovals.length}}</span>
+      </button>
+       <button class="tab-btn" 
+        [class.active]="activeTab === 'class-grades'"
+        (click)="switchTab('class-grades')"
+        [style.color]="activeTab === 'class-grades' ? 'var(--primary-blue)' : '#666666'">
+         <i class="fas fa-users" 
+        [style.color]="activeTab === 'class-grades' ? 'var(--primary-blue)' : '#666666'"></i>
+         Class Grades
+       </button>
+        <button class="tab-btn" 
+          [class.active]="activeTab === 'individual-grades'"
+          (click)="switchTab('individual-grades')"
+        [style.color]="activeTab === 'individual-grades' ? 'var(--primary-blue)' : '#666666'">
+         <i class="fas fa-user" 
+        [style.color]="activeTab === 'individual-grades' ? 'var(--primary-blue)' : '#666666'"></i>
+         Individual Student
+       </button>
+        <button class="tab-btn" 
+        [class.active]="activeTab === 'bulk-entry'"
+        (click)="switchTab('bulk-entry')"
+        [style.color]="activeTab === 'bulk-entry' ? 'var(--primary-blue)' : '#666666'">
+         <i class="fas fa-file-upload" 
+       [style.color]="activeTab === 'bulk-entry' ? 'var(--primary-blue)' : '#666666'"></i>
+        Bulk Entry
+     </button>
+      </div>
+
+      <!-- Grade Approval Tab -->
+      <div id="grade-approval" class="tab-content" [class.active]="activeTab === 'grade-approval'">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Grade Approval</div>
+            <div class="view-all">Review and approve teacher-submitted grades</div>
+          </div>
+          
+          <div class="approval-controls">
+            <div class="approval-stats">
+             <h3 style="font-size: 18px; font-weight: 600; color: var(--primary-blue); margin-bottom: 4px;">
+              Pending Grade Approvals
+            </h3>
+             <p style="font-size: 14px; color: var(--medium-gray);">
+              Review and approve teacher-submitted grades by section
+            </p>
+          </div>
+            <div class="approval-filters">
+              <select class="form-control" [(ngModel)]="approvalFilter" (change)="showAlert('Filtering approvals by: ' + approvalFilter, 'info')">
+                <option>All Submissions</option>
+                <option>This Week</option>
+                <option>Last Week</option>
+                <option>This Month</option>
+              </select>
+              <button class="btn btn-success" (click)="bulkApproveGrades()">
+              <i class="fas fa-check-double"></i> Bulk Approve
+             </button>
+            </div>
+          </div>
+
+          <!-- Approval Queue -->
+          <div class="approval-queue">
+            <div *ngIf="pendingApprovals.length === 0" class="empty-state">
+              <i class="fas fa-check-circle"></i>
+              <p>No pending grade approvals</p>
+              <p style="font-size: 14px; margin-top: 8px;">All teacher submissions have been reviewed</p>
+            </div>
+            
+            <div *ngFor="let approval of pendingApprovals" 
+                 class="approval-item" 
+                 [class.needs-review]="approval.needsReview">
+              <div class="approval-item-header">
+ 
+            <div class="approval-checkbox" style="display: flex; align-items: center; margin-right: 12px;">
+               <input type="checkbox"
+               style="width: 20px; height: 20px; border: 2px solid #b0b0b0; border-radius: 4px; cursor: pointer;"
+               [checked]="selectedApprovals.has(approval.id)"
+               (change)="toggleApprovalSelection(approval.id)">
+            </div>
+                <div class="approval-content">
+                  <h4 class="approval-title">{{approval.course}} ({{approval.section}})</h4>
+                  <p class="approval-meta">Submitted by {{approval.teacher}} • {{approval.gradeType}} • {{approval.studentCount}} students</p>
+                  <p class="approval-time">Submitted {{approval.submitted}}</p>
+                </div>
+                <div class="approval-actions">
+                  <span class="status-badge" [ngClass]="getApprovalStatusClass(approval.status)">
+                    {{getApprovalStatusText(approval.status)}}
+                  </span>
+                 <button class="btn btn-primary" 
+                 (click)="reviewSubmission(approval)"
+                 style="border-radius: 8px !important; padding: 10px 20px;">
+                 Review
+               </button>
+                </div>
+              </div>
+              <div class="approval-stats-grid">
+                <div class="stat-item">
+                  <span class="stat-label-small">Grade Range:</span>
+                  <span class="stat-value-small">{{approval.gradeRange}}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label-small">Average:</span>
+                  <span class="stat-value-small">{{approval.average}}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label-small">Pass Rate:</span>
+                  <span class="stat-value-small" 
+                        [style.color]="approval.passRate >= 90 ? '#43a047' : approval.passRate >= 80 ? '#e6b400' : '#e53935'">
+                    {{approval.passRate}}%
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label-small">Failing:</span>
+                  <span class="stat-value-small" 
+                        [style.color]="approval.failing > 0 ? '#e53935' : '#43a047'">
+                    {{approval.failing}} students
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="approval.needsReview" class="alert alert-error" style="margin-top: 12px;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>High failure rate detected - Review recommended</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Class Grades Tab -->
+      <div id="class-grades" class="tab-content" [class.active]="activeTab === 'class-grades'">
+        <div class="card class-grades-page">
+          <div class="card-header">
+            <div class="card-title">Class Grades</div>
+            <div class="view-all">View grades by class and section</div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Course</label>
+              <select [(ngModel)]="courseSelect" 
+                      (ngModelChange)="loadClassGrades()"
+                      class="form-control">
+                <option value="">Select Course</option>
+                <option value="CS101">CS101 - Programming Fundamentals</option>
+                <option value="CS201">CS201 - Data Structures</option>
+                <option value="IT101">IT101 - Computer Systems</option>
+                <option value="BA101">BA101 - Business Ethics</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Section</label>
+              <select [(ngModel)]="sectionSelect" 
+                      (ngModelChange)="loadClassGrades()"
+                      class="form-control">
+                <option value="">Select Section</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Grade Component</label>
+              <select [(ngModel)]="gradeComponentSelect" 
+                      class="form-control">
+                <option value="all">All Components</option>
+                <option value="prelim">Prelim (30%)</option>
+                <option value="midterm">Midterm (30%)</option>
+                <option value="final">Final (40%)</option>
+                <option value="quiz">Quizzes</option>
+                <option value="project">Projects</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="action-buttons-row">
+            <button class="btn btn-primary" (click)="exportClassGrades()">
+              <i class="fas fa-download"></i> Export Grades
+            </button>
+            <button class="btn btn-secondary" (click)="printGrades()">
+              <i class="fas fa-print"></i> Print Report
+            </button>
+          </div>
+          
+          <div>
+            <div *ngIf="!currentClassKey" class="empty-state">
+              <i class="fas fa-book-open"></i>
+              <p>Select a course and section to view grades</p>
+            </div>
+            
+            <div *ngIf="currentClassKey && currentClassGrades.length === 0" class="empty-state">
+              <i class="fas fa-file-list"></i>
+              <p>No grades found for this class</p>
+            </div>
+            
+            <div *ngIf="currentClassKey && currentClassGrades.length > 0" class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Prelim</th>
+                    <th>Midterm</th>
+                    <th>Final</th>
+                    <th>Final Grade</th>
+                    <th>Letter Grade</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let student of currentClassGrades">
+                    <td>
+                      <div class="student-info">
+                        <div class="student-avatar">
+                          <img [src]="getStudentAvatarUrl(student.studentName)" [alt]="student.studentName">
+                        </div>
+                        <div class="student-details">
+                          <p class="student-name">{{student.studentName}}</p>
+                          <p class="student-id">{{student.studentId}}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{student.prelim || '-'}}</td>
+                    <td>{{student.midterm || '-'}}</td>
+                    <td>{{student.final || '-'}}</td>
+                    <td class="final-grade">{{student.finalGrade || '-'}}</td>
+                    <td>
+                      <span class="status-badge" [ngClass]="getGradeColor(student.letterGrade)">
+                        {{student.letterGrade || 'INC'}}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-badge" [ngClass]="getStatusColor(student.status)">
+                        {{student.status || 'Incomplete'}}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Individual Student Grades Tab -->
+      <div id="individual-grades" class="tab-content" [class.active]="activeTab === 'individual-grades'">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Individual Student Grades</div>
+            <div class="view-all">View and manage individual student grades</div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Search Student</label>
+              <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" 
+                       [(ngModel)]="studentSearch" 
+                       (ngModelChange)="showAlert('Searching student: ' + studentSearch, 'info')"
+                       placeholder="Search by name or student ID..." 
+                       class="search-input">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Academic Year</label>
+              <select class="form-control" [(ngModel)]="academicYearSelect">
+                <option value="2024">2024-2025</option>
+                <option value="2023">2023-2024</option>
+                <option value="2022">2022-2023</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="studentGradesContainer">
+            <div *ngIf="!studentSearch || studentSearch.length < 2" class="empty-state">
+              <i class="fas fa-user-search"></i>
+              <p>Search for a student to view their grades</p>
+            </div>
+            
+            <div *ngIf="studentSearch && studentSearch.length >= 2" class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Prelim</th>
+                    <th>Midterm</th>
+                    <th>Final</th>
+                    <th>Final Grade</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CS101 - Programming Fundamentals</td>
+                    <td>85</td>
+                    <td>88</td>
+                    <td>90</td>
+                    <td>87.5</td>
+                    <td><span class="status-badge status-approved">Passed</span></td>
+                  </tr>
+                  <tr>
+                    <td>CS201 - Data Structures</td>
+                    <td>78</td>
+                    <td>82</td>
+                    <td>85</td>
+                    <td>82.3</td>
+                    <td><span class="status-badge status-approved">Passed</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk Entry Tab -->
+      <div id="bulk-entry" class="tab-content" [class.active]="activeTab === 'bulk-entry'">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Bulk Grade Entry</div>
+            <div class="view-all">Upload grades in bulk using templates</div>
+          </div>
+          
+          <div class="bulk-upload-container">
+            <div class="upload-section">
+              <h3>Bulk Grade Upload</h3>
+              <div class="form-group">
+                <label class="form-label">Upload Type</label>
+                <select class="form-control" [(ngModel)]="uploadType">
+                  <option>Grade Sheet Upload</option>
+                  <option>Quiz Scores</option>
+                  <option>Project Grades</option>
+                  <option>Final Grades</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">File Upload</label>
+                <div class="file-upload" (click)="triggerFileUpload()">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Drop your Excel/CSV file here or click to browse</p>
+                  <p class="file-upload-info">Supported formats: .xlsx, .csv (Max 10MB)</p>
+                  <input type="file" accept=".csv,.xlsx,.xls" class="hidden" id="bulkGradeFile">
+                </div>
+              </div>
+              <div class="upload-actions">
+                <button class="btn btn-primary" (click)="processBulkGrades()">Process Upload</button>
+                <button class="btn btn-secondary" (click)="downloadTemplate()">Download Template</button>
+              </div>
+            </div>
+
+            <div class="upload-instructions">
+              <h3>Upload Instructions</h3>
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                  <h4>File Format Requirements</h4>
+                  <ul>
+                    <li>Use the provided template format</li>
+                    <li>Student ID column is mandatory</li>
+                    <li>Grade values must be numerical</li>
+                    <li>Missing grades will be marked as incomplete</li>
+                  </ul>
+                </div>
+              </div>
+
+             <div class="recent-uploads">
+             <h4 style="font-weight: 700; font-size: 18px; color: #100000; margin-bottom: 12px;">
+               Recent Uploads
+             </h4>
+              <div class="upload-list">
+              <div class="upload-item">
+                <div class="upload-info">
+                <div class="upload-name">CS101_Midterm_Grades.xlsx</div>
+                <div class="upload-meta">Uploaded 2 hours ago • 45 records</div>
+               </div>
+
+               <div class="upload-status">
+               <span class="status-badge status-approved">Success</span>
+               </div>
+                 </div>
+                  <div class="upload-item">
+                    <div class="upload-details">
+                      <p class="upload-name">IT101_Quiz_Scores.csv</p>
+                      <p class="upload-meta">Uploaded yesterday • 38 records</p>
+                    </div>
+                    <span class="status-badge status-pending">Partial</span>
+                  </div>
+                  <div class="upload-item">
+                    <div class="upload-details">
+                      <p class="upload-name">BA101_Projects.xlsx</p>
+                      <p class="upload-meta">Uploaded 3 days ago • 52 records</p>
+                    </div>
+                    <span class="status-badge status-approved">Success</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grade Review Modal -->
+<div class="modal" [class.active]="isReviewModalOpen">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Review Grade Submission</h3>
+      <button class="modal-close" (click)="closeGradeReviewModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body" *ngIf="selectedSubmission">
+      <div class="review-header">
+        <h4>{{selectedSubmission.course}} - {{selectedSubmission.gradeType}}</h4>
+        <p>Submitted by {{selectedSubmission.teacher}} • {{selectedSubmission.studentCount}} students</p>
+      </div>
+      
+      <div class="review-stats">
+        <div class="stat-card">
+          <div class="stat-value">{{selectedSubmission.average}}</div>
+          <div class="stat-label">Average Grade</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{selectedSubmission.passRate}}%</div>
+          <div class="stat-label">Pass Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{selectedSubmission.failing}}</div>
+          <div class="stat-label">Failing Students</div>
+        </div>
+      </div>
+
+      <div class="grade-distribution-preview">
+        <h4>Grade Distribution</h4>
+        <div class="distribution-chart">
+          <div class="distribution-bar" style="height: 60%; background-color: #43a047;" title="A: 25%"></div>
+          <div class="distribution-bar" style="height: 80%; background-color: #2196f3;" title="B: 35%"></div>
+          <div class="distribution-bar" style="height: 50%; background-color: #ffc107;" title="C: 28%"></div>
+          <div class="distribution-bar" style="height: 20%; background-color: #ff9800;" title="D: 8%"></div>
+          <div class="distribution-bar" style="height: 10%; background-color: #f44336;" title="F: 4%"></div>
+        </div>
+      </div>
+
+      <div class="review-actions">
+        <button class="btn btn-success" (click)="approveSubmission()">
+          <i class="fas fa-check"></i> Approve Grades
+        </button>
+        <button class="btn btn-danger" (click)="rejectSubmission()">
+          <i class="fas fa-times"></i> Request Revision
+        </button>
+        <button class="btn btn-secondary" (click)="closeGradeReviewModal()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,8 +32,10 @@ export const routes: Routes = [
       },
       {path: 'grade-records',
          loadComponent: () => import('./feature/gps/admin/records-management/gps-records.component').then(m => m.AdminGpsDashboardComponent)
-
-      }
+      
+      },
+      {path: 'grades-management',
+         loadComponent: () => import('./feature/gps/admin/grades-management/gps-grades.components').then(m => m.AdminGpsGradesComponent)}
     ]
   },
 
