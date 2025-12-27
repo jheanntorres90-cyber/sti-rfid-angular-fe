@@ -53,6 +53,7 @@
     </div>
 
     <!-- Grade Management Tabs -->
+    <div class="tabs-wrapper-card">
     <div class="tabs-container">
     <div class="tabs-header">
         <!-- Grade Approval Tab -->
@@ -193,7 +194,7 @@
 
       <!-- Class Grades Tab -->
       <div id="class-grades" class="tab-content" [class.active]="activeTab === 'class-grades'">
-        <div class="card class-grades-page">
+          <div class="tabs-wrapper-card">
           <div class="card-header">
             <div class="card-title">Class Grades</div>
             <div class="view-all">View grades by class and section</div>
@@ -237,6 +238,7 @@
             </div>
           </div>
           
+          
           <div class="action-buttons-row">
             <button class="btn btn-primary" (click)="exportClassGrades()">
               <i class="fas fa-download"></i> Export Grades
@@ -245,12 +247,13 @@
               <i class="fas fa-print"></i> Print Report
             </button>
           </div>
-          
+          <
           <div>
             <div *ngIf="!currentClassKey" class="empty-state">
               <i class="fas fa-book-open"></i>
               <p>Select a course and section to view grades</p>
             </div>
+          </div>
             
             <div *ngIf="currentClassKey && currentClassGrades.length === 0" class="empty-state">
               <i class="fas fa-file-list"></i>
@@ -307,6 +310,7 @@
 
       <!-- Individual Student Grades Tab -->
       <div id="individual-grades" class="tab-content" [class.active]="activeTab === 'individual-grades'">
+         <div class="tabs-wrapper-card">
         <div class="card">
           <div class="card-header">
             <div class="card-title">Individual Student Grades</div>
@@ -376,9 +380,11 @@
           </div>
         </div>
       </div>
+      </div>
 
       <!-- Bulk Entry Tab -->
       <div id="bulk-entry" class="tab-content" [class.active]="activeTab === 'bulk-entry'">
+         <div class="tabs-wrapper-card">
         <div class="card">
           <div class="card-header">
             <div class="card-title">Bulk Grade Entry</div>
