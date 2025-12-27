@@ -35,7 +35,10 @@ export const routes: Routes = [
       
       },
       {path: 'grades-management',
-         loadComponent: () => import('./feature/gps/admin/grades-management/gps-grades.components').then(m => m.AdminGpsGradesComponent)}
+         loadComponent: () => import('./feature/gps/admin/grades-management/gps-grades.components').then(m => m.AdminGpsGradesComponent)
+      },
+      {path: 'schedule-management',
+        loadComponent: () => import('./feature/gps/admin/schedule-managment/gps-schedule').then(m => m.AdminGpsScheduleComponent)     }
     ]
   },
 
