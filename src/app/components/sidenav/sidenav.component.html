@@ -107,14 +107,28 @@
           Grades Management
         </a>
 
-         <a
+        <a
           routerLink="/admin/schedule-management"
           routerLinkActive="bg-gray-700"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition"
         >
           Schedule Management
         </a>
-      </div>
+
+        <div
+         class="mt-4 px-3 text-[11px] font-semibold tracking-wider text-gray-400 uppercase"
+          [class.hidden]="!sideNavOpen">
+        Communication
+       </div>
+
+        <a
+          routerLink="/admin/announcements-management"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
+        >
+          Announcements
+        </a>
+    </div>
     </div>
 
 
