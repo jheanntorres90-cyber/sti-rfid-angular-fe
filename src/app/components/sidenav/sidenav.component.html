@@ -80,7 +80,7 @@
 
         <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1"></div>
 
-      <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+       <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
         @for (page of gpsMenu; track page.path) {
         <a
           [routerLink]="page.path"
@@ -97,6 +97,22 @@
           class="block px-3 py-2 rounded hover:bg-gray-700"
         >
           Records Management
+        </a>
+
+         <a
+          routerLink="/admin/grades-management"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
+        >
+          Grades Management
+        </a>
+
+         <a
+          routerLink="/admin/schedule-management"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
+        >
+          Schedule Management
         </a>
       </div>
     </div>

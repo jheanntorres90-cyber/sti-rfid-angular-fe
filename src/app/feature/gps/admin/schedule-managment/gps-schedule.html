@@ -1,0 +1,440 @@
+<div class="page-surface">
+<div class="alert-container">
+  <div *ngFor="let alert of alerts; let i = index" 
+       class="alert"
+       [class.alert-success]="alert.type === 'success'"
+       [class.alert-error]="alert.type === 'error'"
+       [class.alert-warning]="alert.type === 'warning'"
+       [class.alert-info]="alert.type === 'info'">
+    <i class="fas" 
+       [class.fa-check-circle]="alert.type === 'success'"
+       [class.fa-exclamation-circle]="alert.type === 'error'"
+       [class.fa-exclamation-triangle]="alert.type === 'warning'"
+       [class.fa-info-circle]="alert.type === 'info'"></i>
+    <span>{{alert.message}}</span>
+    <button (click)="removeAlert(i)" class="alert-close">✕</button>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue-icon">
+      <i class="fas fa-calendar"></i>
+    </div>
+    <div class="stat-value">168</div>
+    <div class="stat-label">Total Classes</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon blue-icon">
+      <i class="fas fa-door-open"></i>
+    </div>
+    <div class="stat-value">42</div>
+    <div class="stat-label">Active Rooms</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon red-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <div class="stat-value"> 5</div>
+    <div class="stat-label">Conflicts</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon green-icon">
+      <i class="fas fa-chart-pie"></i>
+    </div>
+    <div class="stat-value">87%</div>
+    <div class="stat-label">Utilization</div>
+  </div>
+</div>
+
+<!-- Schedule Management Tabs -->
+<div class="tabs-wrapper-card">
+<div class="tabs-container">
+  <div class="tabs-header">
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'calendar'"
+            (click)="switchTab('calendar')">
+      <i class="fas fa-calendar-alt"></i>
+      Calendar
+    </button>
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'list'"
+            (click)="switchTab('list')">
+      <i class="fas fa-list"></i>
+      Class List
+    </button>
+  </div>
+</div>
+
+  <!-- Calendar Tab -->
+  <div id="calendar" class="tab-content" [class.active]="activeTab === 'calendar'">
+    <div class="calendar-section-card">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Class Schedule Calendar</div>
+        <div class="view-all">Manage and view class schedules</div>
+      </div>
+    </div>
+      
+      <div class="calendar-controls">
+        <div class="calendar-navigation">
+          <button class="btn btn-secondary" (click)="changeWeek(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="week-display">{{getWeekDisplay()}}</div>
+          <button class="btn btn-secondary" (click)="changeWeek(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <button class="btn btn-primary" (click)="openAddModal()">
+          <i class="fas fa-plus"></i> Add Schedule
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="schedule-calendar">
+          <thead>
+            <tr>
+              <th style="width: 100px;">Time</th>
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+              <th>Saturday</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let timeSlot of timeSlots">
+              <td style="color: var(--medium-gray); font-size: 12px;">{{timeSlot.display}}</td>
+              <td *ngFor="let day of days">
+                <ng-container *ngIf="getScheduleForDayAndTime(day, timeSlot.time) as schedule">
+                  <div class="schedule-item {{schedule.color}}" 
+                       (click)="openDetailsModal(schedule)">
+                    <div class="time-range">{{schedule.startTime}} - {{schedule.endTime}}</div>
+                    <div class="course-info">{{schedule.course.split(' - ')[0]}}</div>
+                    <div class="room-info">{{schedule.room}}</div>
+                  </div>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- List Tab -->
+  <div id="list" class="tab-content" [class.active]="activeTab === 'list'">
+      <div class="calendar-section-card">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Class Schedule List</div>
+        <div class="view-all">View and manage all class schedules</div>
+      </div>
+    </div>
+      
+      <div class="list-controls">
+        <div class="search-container">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" 
+                 class="search-input" 
+                 placeholder="Search schedules..."
+                 #searchInput
+                 (input)="filterCourses(searchInput.value)">
+        </div>
+        <div class="button-group">
+          <button class="action-pill" (click)="importSchedules()">
+          <i class="fas fa-upload"></i>
+            <span>Import</span>
+         </button>
+
+         <button class="action-pill" (click)="openBulkUploadModal()">
+          <i class="fas fa-file-excel"></i>
+            <span>Bulk Upload</span>
+         </button>
+
+         <button class="action-pill" (click)="exportSchedules()">
+         <i class="fas fa-download"></i>
+           <span>Export</span>
+        </button>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Teacher</th>
+              <th>Schedule</th>
+              <th>Room</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of scheduleData" 
+                [style.background-color]="schedule.status === 'Conflict' ? '#ffebee' : ''">
+              <td style="color: var(--dark-gray);">{{schedule.course}}</td>
+              <td style="color: var(--dark-gray);">{{schedule.teacher}}</td>
+              <td style="color: var(--dark-gray);">{{schedule.schedule}}</td>
+              <td style="color: var(--dark-gray);">{{schedule.room}}</td>
+              <td>
+                <span class="status-badge" 
+                      [class.status-active]="schedule.status === 'Active'"
+                      [class.status-conflict]="schedule.status === 'Conflict'">
+                  {{schedule.status}}
+                </span>
+              </td>
+              <td>
+                <button class="action-btn" (click)="editSchedule(schedule.id)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button *ngIf="schedule.status === 'Conflict'" 
+                        class="action-btn" 
+                        (click)="resolveConflict(schedule.id)">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Schedule Modal -->
+<div class="modal" [class.active]="showAddModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Schedule</h3>
+      <button class="modal-close" (click)="closeAddModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (submit)="saveSchedule(); $event.preventDefault()">
+        <div class="form-group">
+          <label class="form-label">Course Code</label>
+          <div class="dropdown-container">
+            <input type="text" 
+                   class="form-control" 
+                   id="courseCode"
+                   [(ngModel)]="formCourseCode"
+                   [ngModelOptions]="{standalone: true}"
+                   (input)="filterCourses(formCourseCode)"
+                   (focus)="showCourseDropdown = true"
+                   placeholder="Search for a course..." 
+                   autocomplete="off">
+            <div class="dropdown-list" [class.active]="showCourseDropdown">
+              <div *ngFor="let course of filteredCourses" 
+                   class="dropdown-item"
+                   (click)="selectCourse(course)">
+                <span class="dropdown-code">{{course.code}}</span>
+                <span class="dropdown-description">{{course.description}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Teacher</label>
+          <select class="form-control" 
+                  [(ngModel)]="formTeacher"
+                  [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let teacher of teachers">{{teacher}}</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div>
+            <label class="form-label">Day</label>
+            <select class="form-control" 
+                    [(ngModel)]="formDay"
+                    [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let day of daysList">{{day}}</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Duration</label>
+            <select class="form-control" 
+                    [(ngModel)]="formDuration"
+                    [ngModelOptions]="{standalone: true}"
+                    (change)="updateEndTime()">
+              <option *ngFor="let duration of durations" [value]="duration.value">{{duration.label}}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div>
+            <label class="form-label">Start Time</label>
+            <input type="time" 
+                   class="form-control" 
+                   [(ngModel)]="formStartTime"
+                   [ngModelOptions]="{standalone: true}"
+                   (change)="updateEndTime()"
+                   min="07:00" 
+                   max="19:00" 
+                   value="08:00">
+          </div>
+          <div>
+            <label class="form-label">End Time</label>
+            <input type="time" 
+                   class="form-control" 
+                   [(ngModel)]="formEndTime"
+                   [ngModelOptions]="{standalone: true}"
+                   readonly>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Room</label>
+          <select class="form-control" 
+                  [(ngModel)]="formRoom"
+                  [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let room of rooms">{{room}}</option>
+          </select>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Add Schedule</button>
+          <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Details Modal -->
+<div class="modal" [class.active]="showDetailsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Schedule Details</h3>
+      <button class="modal-close" (click)="closeDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="schedule-details" *ngIf="getCurrentSchedule() as schedule">
+        <div class="detail-row">
+          <div class="detail-label">Course Code & Description:</div>
+          <div class="detail-value">{{schedule.course}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Teacher:</div>
+          <div class="detail-value">{{schedule.teacher}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Schedule:</div>
+          <div class="detail-value">{{schedule.schedule}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Day:</div>
+          <div class="detail-value">{{schedule.day}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Time:</div>
+          <div class="detail-value">{{schedule.startTime}} - {{schedule.endTime}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Room:</div>
+          <div class="detail-value">{{schedule.room}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Duration:</div>
+          <div class="detail-value">{{schedule.duration}} hour{{schedule.duration !== 1 ? 's' : ''}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Status:</div>
+          <div class="detail-value">
+            <span class="status-badge" 
+                  [class.status-active]="schedule.status === 'Active'"
+                  [class.status-conflict]="schedule.status === 'Conflict'">
+              {{schedule.status}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="editSchedule(currentScheduleId!)">
+          <i class="fas fa-edit"></i> Edit Schedule
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div class="modal" [class.active]="showBulkUploadModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Bulk Upload Schedules</h3>
+      <button class="modal-close" (click)="closeBulkUploadModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="upload-instructions">
+        <h4>Upload Instructions:</h4>
+        <ul>
+          <li>Download the Excel template first</li>
+          <li>Fill in the schedule data following the template format</li>
+          <li>Upload the completed Excel file</li>
+          <li>Supported formats: .xlsx, .xls</li>
+          <li>Maximum file size: 10MB</li>
+        </ul>
+      </div>
+      
+      <div class="upload-actions">
+        <button class="download-template-btn" (click)="downloadTemplate()">
+          <i class="fas fa-download"></i> Download Template
+        </button>
+      </div>
+      
+    <div
+         class="upload-area"
+         id="uploadArea"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)"
+         (click)="triggerFileInput()">
+          <i class="fas fa-cloud-upload-alt upload-icon"></i>
+
+       <h4>Drop Excel file here or click to browse</h4>
+       <p>Supported formats: .xlsx, .xls (Max 10MB)</p>
+
+           <input
+           type="file"
+           id="excelFileInput"
+           accept=".xlsx,.xls"
+           hidden
+       (change)="onFileSelected($event)" />
+    </div>
+      
+      <div class="upload-progress" [class.hidden]="!showUploadProgress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width]="uploadProgress + '%'"></div>
+        </div>
+        <span class="progress-text">{{uploadProgress | number:'1.0-0'}}%</span>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" 
+                class="btn btn-primary" 
+                (click)="processBulkUpload()"
+                [disabled]="!selectedFile">
+          <i class="fas fa-cog"></i> Process Upload
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="closeBulkUploadModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
