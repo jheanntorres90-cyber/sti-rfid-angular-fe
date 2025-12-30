@@ -140,7 +140,19 @@
           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           Data Management
         </a>
+       
+        <div
+         class="mt-4 px-3 text-[11px] font-semibold tracking-wider text-gray-400 uppercase"
+          [class.hidden]="!sideNavOpen">
+          Others
+        </div>
 
+        <a
+          routerLink="/admin/admin-settings"
+          routerLinkActive="bg-gray-700"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+          Admin Settings
+        </a> 
     </div>
     </div>
 
