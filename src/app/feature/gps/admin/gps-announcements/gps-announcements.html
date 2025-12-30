@@ -1,0 +1,361 @@
+<div class="main-content">
+  <div class="dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue-icon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Announcements</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon green-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-value">{{ stats.active }}</div>
+        <div class="stat-label">Active</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon yellow-icon">
+          <i class="fas fa-thumbtack"></i>
+        </div>
+        <div class="stat-value">{{ stats.pinned }}</div>
+        <div class="stat-label">Pinned</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon purple-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <div class="stat-value">{{ stats.totalViews | number }}</div>
+        <div class="stat-label">Total Views</div>
+      </div>
+    </div>
+
+    <div class="announcements-wrapper">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">All Announcements</div>
+        <div class="filters">
+          <input 
+            type="text" 
+            class="search-input" 
+            [(ngModel)]="searchTerm" 
+            (input)="filterAnnouncements()"
+            placeholder="Search announcements...">
+          
+          <select 
+            class="filter-select" 
+            [(ngModel)]="filterPriority" 
+            (change)="filterAnnouncements()">
+            <option value="all">All Priorities</option>
+            <option value="urgent">Urgent</option>
+            <option value="high">High</option>
+            <option value="normal">Normal</option>
+            <option value="low">Low</option>
+          </select>
+          
+          <select 
+            class="filter-select" 
+            [(ngModel)]="filterAudience" 
+            (change)="filterAnnouncements()">
+            <option value="all">All Audiences</option>
+            <option value="students">Students</option>
+            <option value="teachers">Teachers</option>
+            <option value="organizations">Organizations</option>
+            <option value="staff">Staff</option>
+          </select>
+          
+          <select 
+            class="filter-select" 
+            [(ngModel)]="filterStatus" 
+            (change)="filterAnnouncements()">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+          
+          <button class="btn btn-secondary btn-sm" (click)="resetFilters()">
+            <i class="fas fa-redo"></i> Reset
+          </button>
+        </div>
+      </div>
+      
+      <div class="announcements-list">
+        <div *ngIf="filteredAnnouncements.length === 0" class="no-results">
+          No announcements found matching your filters.
+        </div>
+        
+        <div *ngFor="let ann of filteredAnnouncements" 
+             class="announcement-item" 
+             [class.pinned]="ann.pinned">
+          <i *ngIf="ann.pinned" class="fas fa-thumbtack pin-icon"></i>
+          
+          <div class="announcement-header">
+            <div>
+              <h3 class="announcement-title">{{ ann.title }}</h3>
+              <div class="announcement-meta">
+                <span><i class="fas fa-user"></i> {{ ann.author }}</span>
+                <span><i class="fas fa-calendar"></i> {{ formatDate(ann.date) }}</span>
+                <span class="priority-badge priority-{{ann.priority}}">
+                  {{ capitalizeFirst(ann.priority) }}
+                </span>
+                <span *ngFor="let aud of ann.audience" class="audience-badge">
+                  {{ capitalizeFirst(aud) }}
+                </span>
+                <span><i class="fas fa-eye"></i> {{ ann.views }} views</span>
+                <span *ngIf="ann.attachments.length > 0">
+                  <i class="fas fa-paperclip"></i> {{ ann.attachments.length }} attachment(s)
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="announcement-content">
+            <p>{{ ann.content | slice:0:200 }}{{ ann.content.length > 200 ? '...' : '' }}</p>
+          </div>
+          
+          <div *ngIf="ann.attachments.length > 0" class="attachments-display">
+            <div *ngFor="let att of ann.attachments" class="attachment-item">
+              <img *ngIf="att.type.startsWith('image/')" [src]="att.url" [alt]="att.name">
+              <video *ngIf="att.type.startsWith('video/')" controls>
+                <source [src]="att.url" [type]="att.type">
+                Your browser does not support the video tag.
+              </video>
+              <div *ngIf="!att.type.startsWith('image/') && !att.type.startsWith('video/')" class="file-icon">
+                <i class="fas fa-file"></i>
+                <span class="file-name">{{ att.name }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="announcement-actions">
+            <button class="btn btn-primary btn-sm" (click)="viewAnnouncement(ann)">
+              <i class="fas fa-eye"></i> View Details
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="editAnnouncement(ann)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn" [class.btn-warning]="ann.pinned" [class.btn-success]="!ann.pinned" 
+                    (click)="togglePin(ann.id)">
+              <i class="fas fa-thumbtack"></i> {{ ann.pinned ? 'Unpin' : 'Pin' }}
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="deleteAnnouncement(ann.id)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+            
+            <div class="status-toggle">
+              <span>{{ ann.status === 'active' ? 'Active' : 'Inactive' }}</span>
+              <div class="toggle-switch" [class.active]="ann.status === 'active'" 
+                   (click)="toggleStatus(ann.id)">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div *ngIf="showModal" class="modal active">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">{{ modalMode === 'create' ? 'Create Announcement' : 'Edit Announcement' }}</h3>
+      <button class="modal-close" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="submitAnnouncement()">
+        <div class="form-group">
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-control" [(ngModel)]="currentAnnouncement.title" 
+                 name="title" required placeholder="Enter announcement title">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Content *</label>
+          <textarea class="form-control" [(ngModel)]="currentAnnouncement.content" 
+                    name="content" required placeholder="Enter announcement content"></textarea>
+        </div>
+
+<label class="attachments-label">Attachments</label>
+
+<div class="attachments-container">
+
+  <!-- ADD BUTTON -->
+  <label class="upload-box">
+    <input
+      type="file"
+      hidden
+      multiple
+      accept="image/*,video/*"
+      (change)="onFilesSelected($event)">
+    <i class="fas fa-paperclip"></i>
+    <span>Add Images or Videos</span>
+  </label>
+
+  <!-- PREVIEW -->
+  <div class="attachments-preview"
+       *ngIf="currentAnnouncement.attachments.length > 0">
+    <div *ngFor="let att of currentAnnouncement.attachments; let i=index"
+         class="attachment-item">
+      <img *ngIf="att.type.startsWith('image/')" [src]="att.url">
+      <video *ngIf="att.type.startsWith('video/')" [src]="att.url" controls></video>
+      <button type="button"
+              class="remove-attachment"
+              (click)="removeAttachment(i)">✕</button>
+    </div>
+  </div>
+
+</div>
+
+        
+        <div class="form-group">
+          <label class="form-label">Priority *</label>
+          <select class="form-control" [(ngModel)]="currentAnnouncement.priority" name="priority" required>
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Target Audience *</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" value="students" 
+                     [checked]="currentAnnouncement.audience.includes('students')"
+                     (change)="updateAudience($event, 'students')">
+              <span>Students</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" value="teachers"
+                     [checked]="currentAnnouncement.audience.includes('teachers')"
+                     (change)="updateAudience($event, 'teachers')">
+              <span>Teachers</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" value="organizations"
+                     [checked]="currentAnnouncement.audience.includes('organizations')"
+                     (change)="updateAudience($event, 'organizations')">
+              <span>Organizations</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" value="staff"
+                     [checked]="currentAnnouncement.audience.includes('staff')"
+                     (change)="updateAudience($event, 'staff')">
+              <span>Staff</span>
+            </label>
+          </div>
+        </div>
+
+             <!-- Schedule -->
+        <div class="form-group">
+          <label class="form-label">Schedule (Optional)</label>
+          <div class="date-input-wrapper">
+           <input
+             type="datetime-local"
+             class="form-control"
+             [(ngModel)]="currentAnnouncement.schedule"
+             name="schedule">
+        </div>
+        <small class="helper-text">Leave empty to publish immediately</small>
+      </div>
+
+                    <!-- Expiry -->
+        <div class="form-group">
+         <label class="form-label">Expiry Date (Optional)</label>
+        <div class="date-input-wrapper">
+         <input
+          type="datetime-local"
+          class="form-control"
+          [(ngModel)]="currentAnnouncement.expiryDate"
+          name="expiryDate">
+     </div>
+   </div>
+                
+
+        <div class="form-group">
+          <label class="checkbox-item">
+            <input type="checkbox" [(ngModel)]="currentAnnouncement.pinned" name="pinned">
+            <span>Pin this announcement to the top</span>
+          </label>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+            <span>{{ modalMode === 'create' ? 'Publish Announcement' : 'Update Announcement' }}</span>
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div *ngIf="showViewModal" class="modal active">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Announcement Details</h3>
+      <button class="modal-close" (click)="closeViewModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="selectedAnnouncement" class="announcement-details">
+        <div *ngIf="selectedAnnouncement.pinned" class="pinned-notice">
+          <i class="fas fa-thumbtack"></i> This announcement is pinned
+        </div>
+        
+       <h2 class="details-title">{{ selectedAnnouncement.title }}</h2>
+
+<div class="details-meta">
+  <span><i class="fas fa-user"></i> Admin User</span>
+  <span><i class="fas fa-calendar"></i> Oct 1, 2024</span>
+  <span><i class="fas fa-eye"></i> 1250 views</span>
+  <span class="priority-badge priority-urgent">Urgent Priority</span>
+  <span class="status-badge active">Active</span>
+</div>
+        
+        <div class="details-section">
+          <strong>Target Audience</strong>
+         <span class="audience-badge">Students</span>
+       </div>
+
+        <div class="details-section">
+            <strong>Content</strong>
+         <p class="details-content">Enrollment for the Second Semester 2024-2025 will begin on October 15, 2024. Please prepare your documents and visit the Registrar's Office during office hours. Early enrollment is encouraged to secure your preferred schedule</p>
+       </div>
+        
+        <div *ngIf="selectedAnnouncement.attachments.length > 0" class="attachments-section">
+          <strong>Attachments</strong>
+          <div class="attachments-grid">
+            <div *ngFor="let att of selectedAnnouncement.attachments" class="attachment-item">
+              <img *ngIf="att.type.startsWith('image/')" [src]="att.url" [alt]="att.name">
+              <video *ngIf="att.type.startsWith('video/')" controls>
+                <source [src]="att.url" [type]="att.type">
+              </video>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-primary" (click)="editFromView()">
+            <i class="fas fa-edit"></i> Edit Announcement
+          </button>
+          <button class="btn btn-secondary" (click)="closeViewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
