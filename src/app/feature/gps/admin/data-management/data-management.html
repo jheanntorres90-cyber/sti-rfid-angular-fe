@@ -1,0 +1,283 @@
+<div class="data-management">
+  <!-- Tabs -->
+  <div class="data-tabs">
+    <button class="data-tab" [class.active]="activeTab === 'import'" (click)="switchTab('import')">
+      Import Data
+    </button>
+    <button class="data-tab" [class.active]="activeTab === 'export'" (click)="switchTab('export')">
+      Export Data
+    </button>
+  </div>
+
+  <!-- Import Tab -->
+  <div class="tab-content" [class.active]="activeTab === 'import'" id="import-tab">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-download"></i> Import Data
+        </div>
+      </div>
+      
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <strong>Import Guidelines:</strong>
+          <ul>
+            <li>Supported formats: CSV, XLSX, XLS</li>
+            <li>Maximum file size: 50MB</li>
+            <li>Ensure column headers match the template</li>
+            <li>Date format: YYYY-MM-DD</li>
+            <li>Review validation errors before completing import</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Data Type</label>
+        <select class="form-control" [(ngModel)]="selectedDataType">
+          <option value="">Choose data type...</option>
+          <option *ngFor="let type of dataTypes" [value]="type.value">{{type.label}}</option>
+        </select>
+      </div>
+
+      <div class="file-upload-zone" 
+           [class.dragover]="isDragging"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <h3>Drag & Drop your file here</h3>
+        <p class="upload-subtitle">or click to browse from your computer</p>
+        <input type="file" 
+               #fileInput
+               (change)="onFileSelected($event)" 
+               accept=".csv,.xlsx,.xls" 
+               style="display: none;">
+        <button class="btn btn-secondary" (click)="fileInput.click()">
+          <i class="fas fa-folder-open"></i> Browse Files
+        </button>
+      </div>
+
+      <div class="file-info" [class.show]="showImportFileInfo">
+        <div class="file-info-content">
+          <div>
+            <i class="fas fa-file-excel file-icon"></i>
+            <strong class="file-name">{{importFileInfo?.name}}</strong>
+            <span class="file-size">{{importFileInfo?.size}}</span>
+          </div>
+          <button class="btn btn-secondary" (click)="clearImportFile()">
+            <i class="fas fa-times"></i> Remove
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group import-options">
+        <label class="form-label">Import Options</label>
+        <div class="options-list">
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="validateData">
+            <span>Validate data before import (recommended)</span>
+          </label>
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="skipDuplicates">
+            <span>Skip duplicate records automatically</span>
+          </label>
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="createBackup">
+            <span>Create backup before import</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="progress-container" [class.show]="showImportProgress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="importProgress">{{importProgress | number:'1.0-0'}}%</div>
+        </div>
+        <div class="status-message" [class]="'show ' + importStatusType">{{importStatus}}</div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" (click)="startImport()">
+          <i class="fas fa-download"></i> Start Import
+        </button>
+        <button class="btn btn-secondary" (click)="toggleTemplateSection()">
+          <i class="fas fa-file-download"></i> Download Template
+        </button>
+        <button class="btn btn-secondary" (click)="viewHistory()">
+          <i class="fas fa-history"></i> View History
+        </button>
+      </div>
+    </div>
+
+    <!-- Template Section -->
+    <div class="card" *ngIf="showTemplateSection">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-file-download"></i> Download Import Templates
+        </div>
+      </div>
+      
+      <div class="template-section">
+        <div class="template-card" *ngFor="let template of templates" 
+             (click)="downloadTemplate(template.type)">
+          <i class="fas fa-{{template.icon}}"></i>
+          <h4>{{template.title}}</h4>
+          <p>{{template.desc}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Tab -->
+  <div class="tab-content" [class.active]="activeTab === 'export'" id="export-tab">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-upload"></i> Export Data
+        </div>
+      </div>
+      
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <strong>Export Information:</strong>
+          <ul>
+            <li>Choose your preferred export format below</li>
+            <li>Apply filters to export specific data ranges</li>
+            <li>Large exports may take several minutes to process</li>
+            <li>Files will be downloaded directly to your device</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Data Type to Export</label>
+        <select class="form-control" [(ngModel)]="exportDataType" (change)="updateSummary()">
+          <option value="">Choose data type...</option>
+          <option *ngFor="let type of dataTypes" [value]="type.value">{{type.label}}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Export Format</label>
+        <div class="export-options">
+          <div class="export-card" 
+               *ngFor="let format of exportFormats"
+               [class.selected]="selectedFormat === format.format"
+               (click)="selectFormat(format.format)">
+            <i class="fas fa-{{format.icon}}"></i>
+            <h4>{{format.title}}</h4>
+            <p>{{format.desc}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filter-section">
+        <div class="filter-header">
+          <h4><i class="fas fa-filter"></i> Advanced Filters (Optional)</h4>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="showFilters" (change)="toggleFilters()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="filter-content" [class.show]="showFilters">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Date From</label>
+              <input type="date" class="form-control" [(ngModel)]="dateFrom">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Date To</label>
+              <input type="date" class="form-control" [(ngModel)]="dateTo">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Program/Department</label>
+              <select class="form-control" [(ngModel)]="program">
+                <option *ngFor="let prog of programs" [value]="prog.value">{{prog.label}}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Year Level</label>
+              <select class="form-control" [(ngModel)]="yearLevel">
+                <option *ngFor="let year of yearLevels" [value]="year.value">{{year.label}}</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" [(ngModel)]="status">
+              <option *ngFor="let stat of statuses" [value]="stat.value">{{stat.label}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Options -->
+      <div class="form-group export-options">
+        <label class="form-label">Export Options</label>
+        <div class="options-list">
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="includeHeaders">
+            <span>Include column headers</span>
+          </label>
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="compressFile">
+            <span>Compress file (ZIP format)</span>
+          </label>
+          <label class="option-item">
+            <input type="checkbox" [(ngModel)]="encryptFile">
+            <span>Password protect export (for sensitive data)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Summary Box -->
+      <div class="summary-box" [class.show]="showSummary">
+        <h4><i class="fas fa-list-check"></i> Export Summary</h4>
+        <div class="summary-item">
+          <span>Data Type:</span>
+          <strong>{{summaryData.dataType}}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Export Format:</span>
+          <strong>{{summaryData.format}}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Estimated Records:</span>
+          <strong>{{summaryData.records}}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Estimated File Size:</span>
+          <strong>{{summaryData.size}}</strong>
+        </div>
+      </div>
+
+      <div class="progress-container" [class.show]="showExportProgress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="exportProgress">{{exportProgress | number:'1.0-0'}}%</div>
+        </div>
+        <div class="status-message" [class]="'show ' + exportStatusType">{{exportStatus}}</div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" (click)="startExport()">
+          <i class="fas fa-upload"></i> Start Export
+        </button>
+        <button class="btn btn-secondary" (click)="previewData()">
+          <i class="fas fa-eye"></i> Preview Data
+        </button>
+        <button class="btn btn-secondary" (click)="viewExportHistory()">
+          <i class="fas fa-history"></i> Export History
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

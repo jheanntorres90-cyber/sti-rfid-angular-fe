@@ -38,7 +38,14 @@ export const routes: Routes = [
          loadComponent: () => import('./feature/gps/admin/grades-management/gps-grades.components').then(m => m.AdminGpsGradesComponent)
       },
       {path: 'schedule-management',
-        loadComponent: () => import('./feature/gps/admin/schedule-managment/gps-schedule').then(m => m.AdminGpsScheduleComponent)     }
+        loadComponent: () => import('./feature/gps/admin/schedule-managment/gps-schedule').then(m => m.AdminGpsScheduleComponent)
+      },
+      {path: 'announcements-management',
+        loadComponent: () => import('./feature/gps/admin/gps-announcements/gps-announcements').then(m => m.AdminGpsAnnouncementsComponent)
+      },
+      {path: 'data-management',
+        loadComponent: () => import('./feature/gps/admin/data-management/data-management').then(m => m.AdminGpsDataManagementComponent)
+      },
     ]
   },
 
