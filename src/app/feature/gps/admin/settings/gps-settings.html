@@ -1,0 +1,378 @@
+<div class="admin-settings">
+  <!-- Alert Messages -->
+  <div class="alert-container" id="alertContainer">
+    <div *ngFor="let alert of alerts" 
+         class="alert" 
+         [class]="'alert-' + alert.type"
+         [id]="alert.id">
+      <i class="fas" [class]="getAlertIcon(alert.type)"></i>
+      <div class="alert-content">
+        <span>{{alert.message}}</span>
+        <button (click)="removeAlert(alert.id)" class="alert-close">✕</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Settings Columns -->
+  <div class="settings-columns">
+    <!-- Profile Settings -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Profile Settings</div>
+        <div class="view-all">Manage your personal information</div>
+      </div>
+      
+      <div class="card-content">
+        <!-- Profile Picture Section -->
+        <div class="profile-picture-container">
+          <div class="profile-picture">
+            <img [src]="profileData.profilePicture" alt="Profile" class="profile-img">
+            <label for="profileUpload" class="profile-overlay" (click)="onProfilePictureClick()">
+              <i class="fas fa-camera"></i>
+              <input type="file" 
+                     #fileInput
+                     (change)="onFileSelected($event)" 
+                     accept="image/*" 
+                     style="display: none;">
+            </label>
+          </div>
+          <div class="profile-preview-text">Profile Preview</div>
+        </div>
+        
+        <!-- Profile Form -->
+        <form class="form-grid" (ngSubmit)="saveProfileSettings()" #profileForm="ngForm">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" 
+                   [(ngModel)]="profileData.fullName" 
+                   name="fullName"
+                   class="form-control" 
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" 
+                   [(ngModel)]="profileData.email" 
+                   name="email"
+                   class="form-control" 
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input type="tel" 
+                   [(ngModel)]="profileData.mobile" 
+                   name="mobile"
+                   class="form-control">
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Profile Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- System Preferences -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">System Preferences</div>
+        <div class="view-all">Customize your experience</div>
+      </div>
+      
+      <div class="card-content">
+        <form class="form-grid" (ngSubmit)="savePreferences()" #preferencesForm="ngForm">
+          <div class="form-group">
+            <label class="form-label">Theme Preference</label>
+            <select [(ngModel)]="themePreference" 
+                    name="theme"
+                    class="form-control">
+              <option *ngFor="let theme of themeOptions" [value]="theme.value">
+                {{theme.label}}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="toggle-group">
+              <div class="toggle-label">
+                <span class="toggle-text">Desktop Notifications</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" 
+                         [(ngModel)]="desktopNotifications"
+                         name="desktopNotifications">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Security Settings</div>
+        <div class="view-all">Manage your account security</div>
+      </div>
+      
+      <div class="card-content">
+        <form class="form-grid" (ngSubmit)="updateSecuritySettings()" #securityForm="ngForm">
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" 
+                   [(ngModel)]="currentPassword"
+                   name="currentPassword"
+                   class="form-control" 
+                   placeholder="Enter current password">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" 
+                   [(ngModel)]="newPassword"
+                   name="newPassword"
+                   (input)="checkPasswordStrength(newPassword)"
+                   class="form-control" 
+                   placeholder="Enter new password">
+            <div class="password-strength" [class]="passwordStrengthClass">
+              <div class="password-strength-bar" [style.width.%]="passwordStrength"></div>
+            </div>
+            <div class="password-requirements">
+              <small>Password must contain at least 8 characters with uppercase, lowercase, numbers, and special characters</small>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" 
+                   [(ngModel)]="confirmPassword"
+                   name="confirmPassword"
+                   class="form-control" 
+                   placeholder="Confirm new password">
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="toggle-group">
+              <div class="toggle-label">
+                <span class="toggle-text">Two-Factor Authentication (2FA)</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" 
+                         [(ngModel)]="twoFactorAuth"
+                         name="twoFactorAuth">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="toggle-label">
+                <span class="toggle-text">Login Alerts</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" 
+                         [(ngModel)]="loginAlerts"
+                         name="loginAlerts">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-shield-alt"></i> Update Security Settings
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Management Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Admin Management</div>
+        <div class="view-all">Manage system administrators</div>
+      </div>
+      
+      <div class="card-content">
+        <div class="admin-list-container">
+          <div class="admin-list-filters">
+            <div class="search-container full-width">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" 
+                     class="search-input" 
+                     placeholder="Search admins..." 
+                     [(ngModel)]="adminSearchTerm"
+                     (input)="onAdminSearchChange()">
+            </div>
+            <button class="btn btn-primary" (click)="openAddAdminModal()">
+              <i class="fas fa-user-plus"></i> Add New Admin
+            </button>
+          </div>
+          
+          <div class="admin-list-tabs">
+            <div class="admin-list-tab" 
+                 [class.active]="currentAdminTab === 'active'"
+                 (click)="switchAdminTab('active')">
+              Active Admins
+            </div>
+            <div class="admin-list-tab" 
+                 [class.active]="currentAdminTab === 'deleted'"
+                 (click)="switchAdminTab('deleted')">
+              Deleted Admins
+            </div>
+          </div>
+          
+          <div class="admin-list" *ngIf="filteredAdmins.length > 0; else emptyState">
+            <div class="admin-item" 
+                 *ngFor="let admin of filteredAdmins"
+                 [class.deleted]="admin.status === 'deleted'">
+              <div class="admin-info">
+                <div class="admin-avatar-small">{{getAdminInitials(admin.fullName)}}</div>
+                <div class="admin-details">
+                  <div class="admin-name">{{admin.fullName}}</div>
+                  <div class="admin-email">{{admin.email}}</div>
+                  <div class="admin-role">{{getRoleLabel(admin.role)}}</div>
+                </div>
+              </div>
+              <div class="admin-actions">
+                <span class="status-badge" [class]="getStatusClass(admin.status)">
+                  {{getStatusText(admin.status)}}
+                </span>
+                <button *ngIf="currentAdminTab === 'active'" 
+                        class="btn btn-danger btn-sm" 
+                        (click)="openDeleteAdminModal(admin.id)">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+                <button *ngIf="currentAdminTab === 'deleted'" 
+                        class="btn btn-success btn-sm" 
+                        (click)="openRestoreAdminModal(admin.id)">
+                  <i class="fas fa-undo"></i> Restore
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #emptyState>
+            <div class="empty-state">
+              <i class="fas fa-user-slash"></i>
+              <p>No {{currentAdminTab === 'active' ? 'active' : 'deleted'}} admins found</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Admin Modal -->
+<div class="modal" 
+     [class.active]="showAddAdminModal"
+     (click)="closeAddAdminModal()">
+  <div class="modal-content" (click)="onModalClick($event)">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Admin</h3>
+      <button class="modal-close" (click)="closeAddAdminModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="addAdmin()" #addAdminForm="ngForm" class="admin-form">
+        <div class="form-section">
+          <h4 class="section-title">Admin Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input type="text" 
+                     [(ngModel)]="newAdminData.fullName"
+                     name="adminFullName"
+                     class="form-control" 
+                     required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" 
+                     [(ngModel)]="newAdminData.email"
+                     name="adminEmail"
+                     class="form-control" 
+                     required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Admin Role *</label>
+              <select class="form-control" 
+                      [(ngModel)]="newAdminData.role"
+                      name="adminRole"
+                      required>
+                <option value="">Select Role</option>
+                <option *ngFor="let role of roleOptions" [value]="role.value">
+                  {{role.label}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Admin</button>
+          <button type="button" class="btn btn-secondary" (click)="closeAddAdminModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" 
+     [class.active]="showDeleteAdminModal"
+     (click)="closeDeleteAdminModal()">
+  <div class="modal-content" (click)="onModalClick($event)">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Deletion</h3>
+      <button class="modal-close" (click)="closeDeleteAdminModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this admin? This action can be undone.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-danger" (click)="confirmDeleteAdmin()">Delete Admin</button>
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteAdminModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Restore Confirmation Modal -->
+<div class="modal" 
+     [class.active]="showRestoreAdminModal"
+     (click)="closeRestoreAdminModal()">
+  <div class="modal-content" (click)="onModalClick($event)">
+    <div class="modal-header">
+      <h3 class="modal-title">Restore Admin</h3>
+      <button class="modal-close" (click)="closeRestoreAdminModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to restore this admin account?</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-success" (click)="confirmRestoreAdmin()">Restore Admin</button>
+        <button type="button" class="btn btn-secondary" (click)="closeRestoreAdminModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

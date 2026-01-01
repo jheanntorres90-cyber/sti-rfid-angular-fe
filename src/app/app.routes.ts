@@ -46,6 +46,9 @@ export const routes: Routes = [
       {path: 'data-management',
         loadComponent: () => import('./feature/gps/admin/data-management/data-management').then(m => m.AdminGpsDataManagementComponent)
       },
+      {path: 'admin-settings',
+        loadComponent: () => import('./feature/gps/admin/settings/gps-settings').then(m => m.AdminGpsSettingsComponent)
+      },
     ]
   },
 
