@@ -1,1 +1,65 @@
-<div>This is the admin ats dashboard page.</div>
+<!-- Modern Alert Container -->
+<div class="alert-container" id="alertContainer"></div>
+
+<!-- Dashboard Content -->
+<div class="dashboard">
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div 
+      *ngFor="let stat of stats" 
+      class="stat-card" 
+      (click)="handleStatClick(stat)"
+    >
+      <div class="stat-icon" [class.blue-icon]="stat.color === 'blue'" [class.yellow-icon]="stat.color === 'yellow'">
+        <i class="fas" [ngClass]="stat.icon"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Quick Actions</div>
+      <a href="#" class="view-all">View All</a>
+    </div>
+    
+    <div class="quick-actions">
+      <a 
+        *ngFor="let action of quickActions" 
+        href="#" 
+        class="action-btn" 
+        [attr.data-action]="action.action"
+        (click)="handleQuickAction(action.action); $event.preventDefault()"
+      >
+        <div class="action-icon">
+          <i class="fas" [ngClass]="action.icon"></i>
+        </div>
+        <span>{{ action.label }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Today's Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Today's Activity</div>
+      <a href="#" class="view-all">View All</a>
+    </div>
+    
+    <ul class="activity-list">
+      <li *ngFor="let activity of activities" class="activity-item">
+        <div class="activity-icon">
+          <i class="fas" [ngClass]="activity.icon"></i>
+        </div>
+        <div class="activity-content">
+          <div class="activity-time">{{ activity.time }}</div>
+          <div class="activity-text">{{ activity.text }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
