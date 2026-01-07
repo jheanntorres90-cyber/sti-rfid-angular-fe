@@ -46,8 +46,8 @@ export const routes: Routes = [
       {path: 'data-management',
         loadComponent: () => import('./feature/gps/admin/data-management/data-management').then(m => m.AdminGpsDataManagementComponent)
       },
-      {path: 'admin-settings',
-        loadComponent: () => import('./feature/gps/admin/settings/gps-settings').then(m => m.AdminGpsSettingsComponent)
+      {path: 'ats-attendance',
+        loadComponent: () => import('./feature/ats/admin/dashboard/attendance/ats-attendance.components').then(m => m.AdminAtsAttendanceComponent)
       },
     ]
   },
