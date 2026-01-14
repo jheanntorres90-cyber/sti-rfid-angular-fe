@@ -49,6 +49,9 @@ export const routes: Routes = [
       {path: 'ats-attendance',
         loadComponent: () => import('./feature/ats/admin/dashboard/attendance/ats-attendance.components').then(m => m.AdminAtsAttendanceComponent)
       },
+      {path: 'ats-manage-students', 
+        loadComponent: () => import('./feature/ats/admin/dashboard/manage-students/ats-manage-students').then(m => m.ManageStudentsComponent)
+      }
     ]
   },
 

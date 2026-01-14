@@ -1,0 +1,271 @@
+<!-- Modern Alert Container -->
+<div id="alertContainer" class="alert-container"></div>
+
+<!-- Dashboard Content -->
+<div class="dashboard">
+  <!-- Register Student Form -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Register New Student</div>
+    </div>
+    
+    <form class="form-grid" #registerForm="ngForm" (ngSubmit)="registerStudent()">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" class="form-control" placeholder="Enter full name" 
+               [(ngModel)]="newStudent.fullName" name="fullName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="studentId">Student ID</label>
+        <input type="text" id="studentId" class="form-control" placeholder="Enter student ID" 
+               [(ngModel)]="newStudent.studentId" name="studentId" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="course">Course</label>
+        <select id="course" class="form-control" 
+                [(ngModel)]="newStudent.course" name="course" required>
+          <option value="">Select Course</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSED">BSED</option>
+          <option value="BSCS">BSCS</option>
+          <option value="BSBA">BSBA</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="yearSection">Year & Section</label>
+        <input type="text" id="yearSection" class="form-control" placeholder="e.g., 2nd Year - Section A" 
+               [(ngModel)]="newStudent.yearSection" name="yearSection" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter email address" 
+               [(ngModel)]="newStudent.email" name="email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="contact">Contact Number</label>
+        <input type="text" id="contact" class="form-control" placeholder="Enter contact number" 
+               [(ngModel)]="newStudent.contact" name="contact" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="rfid">RFID Code</label>
+        <input type="text" id="rfid" class="form-control" placeholder="Scan or enter RFID code" 
+               [(ngModel)]="newStudent.rfid" name="rfid" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="faceImage">Upload Face Image</label>
+        <input type="file" id="faceImage" class="form-control" accept="image/*" 
+               (change)="onFileSelected($event, 'new')" required>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+         <i class="fas fa-user-plus"></i> Register Student
+       </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-success" (click)="exportTableToCSV()">
+      <i class="fas fa-file-csv"></i> Export CSV
+    </button>
+    <button class="btn btn-secondary" (click)="exportTableToExcel()">
+      <i class="fas fa-file-excel"></i> Export Excel
+    </button>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Student Records</div>
+      <div class="records-info">
+        Showing <span id="showingCount">{{ showingCount }}</span> of <span id="totalCount">{{ filteredStudents.length }}</span> students
+      </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="filter-section">
+      <div class="section-inner">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="searchInput">Search by Name or ID</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="Enter name or student ID"
+                 [(ngModel)]="searchInput" (input)="applyFilters()">
+        </div>
+        
+        <div class="form-group">
+          <label for="filterCourse">Course</label>
+          <select id="filterCourse" class="form-control"
+                  [(ngModel)]="filterCourse" (change)="applyFilters()">
+            <option value="">All Courses</option>
+            <option value="BSIT">BSIT</option>
+            <option value="BSED">BSED</option>
+            <option value="BSCS">BSCS</option>
+            <option value="BSBA">BSBA</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="filterSection">Section</label>
+          <select id="filterSection" class="form-control"
+                  [(ngModel)]="filterSection" (change)="applyFilters()">
+            <option value="">All Sections</option>
+            <option value="A">Section A</option>
+            <option value="B">Section B</option>
+            <option value="C">Section C</option>
+            <option value="D">Section D</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="filterYear">Year Level</label>
+          <select id="filterYear" class="form-control"
+                  [(ngModel)]="filterYear" (change)="applyFilters()">
+            <option value="">All Years</option>
+            <option value="1st">1st Year</option>
+            <option value="2nd">2nd Year</option>
+            <option value="3rd">3rd Year</option>
+            <option value="4th">4th Year</option>
+          </select>
+        </div>
+
+       <div class="form-group filter-action">
+         <button type="button" class="btn btn-primary" (click)="applyFilters()">
+         <i class="fas fa-filter"></i> Apply Filters
+        </button>
+      </div>
+
+      </div>
+    </div>
+    </div>
+    <div class="table-container">
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Year & Section</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>RFID</th>
+            <th>Face ID</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody">
+          <tr *ngFor="let student of paginatedStudents">
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.course }}</td>
+            <td>{{ student.yearSection }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.contact }}</td>
+            <td>{{ student.rfid }}</td>
+            <td><img [src]="student.faceImage" alt="Face ID"></td>
+            <td class="action-cell">
+              <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+              <button class="action-btn edit-btn" (click)="openEditModal(student)"><i class="fas fa-edit"></i></button>
+              <button class="action-btn delete-btn" (click)="confirmDelete(student)"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="table-footer">
+      <div class="pagination-info">
+        Page <span id="currentPage">{{ currentPage }}</span> of <span id="totalPages">{{ totalPages }}</span>
+      </div>
+      <div class="pagination-controls">
+        <button class="btn btn-outline" id="prevPage" (click)="previousPage()" [disabled]="currentPage === 1">
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <button class="btn btn-outline" id="nextPage" (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div class="modal" [class.active]="isEditModalOpen" id="editModal">
+  <div class="modal-content">
+    <button class="modal-close" (click)="isEditModalOpen = false">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Student Information</h2>
+    </div>
+    
+    <form class="form-grid" #editForm="ngForm" (ngSubmit)="updateStudent()">
+      <div class="form-group">
+        <label for="editName">Full Name</label>
+        <input type="text" id="editName" class="form-control" 
+               [(ngModel)]="editStudent.fullName" name="editName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="editStudentId">Student ID</label>
+        <input type="text" id="editStudentId" class="form-control" 
+               [(ngModel)]="editStudent.studentId" name="editStudentId" disabled>
+      </div>
+      
+      <div class="form-group">
+        <label for="editCourse">Course</label>
+        <select id="editCourse" class="form-control" 
+                [(ngModel)]="editStudent.course" name="editCourse" required>
+          <option value="BSIT">BSIT</option>
+          <option value="BSED">BSED</option>
+          <option value="BSCS">BSCS</option>
+          <option value="BSBA">BSBA</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="editSection">Year & Section</label>
+        <input type="text" id="editSection" class="form-control" 
+               [(ngModel)]="editStudent.yearSection" name="editSection" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="editEmail">Email</label>
+        <input type="email" id="editEmail" class="form-control" 
+               [(ngModel)]="editStudent.email" name="editEmail" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="editContact">Contact Number</label>
+        <input type="text" id="editContact" class="form-control" 
+               [(ngModel)]="editStudent.contact" name="editContact" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="editRfid">RFID Code</label>
+        <input type="text" id="editRfid" class="form-control" 
+               [(ngModel)]="editStudent.rfid" name="editRfid" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="editFaceImage">Update Face Image</label>
+        <input type="file" id="editFaceImage" class="form-control" accept="image/*"
+               (change)="onFileSelected($event, 'edit')">
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="isEditModalOpen = false">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+     </div>
+    </form>
+  </div>
+</div>
