@@ -54,7 +54,10 @@ export const routes: Routes = [
       },
       {path: 'ats-schedule',
         loadComponent: () => import('./feature/ats/admin/schedule/ats-schedule').then(m => m.AdminScheduleComponent)
-      }
+      },
+      {path: 'ats-announcements',
+        loadComponent: () => import('./feature/ats/admin/announcements/announcements').then(m => m.AdminAnnouncementsComponent)
+      },
     ]
   },
 
