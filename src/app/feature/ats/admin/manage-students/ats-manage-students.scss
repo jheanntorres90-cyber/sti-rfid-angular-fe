@@ -5,7 +5,7 @@
 }
 
 .card {
-  background-color: white;
+  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
@@ -27,6 +27,7 @@
   font-size: 18px;
   font-weight: 600;
 }
+
 
 .records-info {
   font-size: 13px;
@@ -257,6 +258,7 @@ tbody tr:hover {
 
 .edit-btn:hover {
   background-color: #e0a800;
+  transform: translateY(-4px); 
 }
 
 .delete-btn {
@@ -266,6 +268,7 @@ tbody tr:hover {
 
 .delete-btn:hover {
   background-color: #c82333;
+  transform: translateY(-4px); 
 }
 
 .view-btn {
@@ -275,6 +278,7 @@ tbody tr:hover {
 
 .view-btn:hover {
   background-color: #255bb5;
+  transform: translateY(-4px); 
 }
 
 /* Table Footer */

@@ -47,10 +47,13 @@ export const routes: Routes = [
         loadComponent: () => import('./feature/gps/admin/data-management/data-management').then(m => m.AdminGpsDataManagementComponent)
       },
       {path: 'ats-attendance',
-        loadComponent: () => import('./feature/ats/admin/dashboard/attendance/ats-attendance.components').then(m => m.AdminAtsAttendanceComponent)
+        loadComponent: () => import('./feature/ats/admin/attendance/ats-attendance.components').then(m => m.AdminAtsAttendanceComponent)
       },
       {path: 'ats-manage-students', 
-        loadComponent: () => import('./feature/ats/admin/dashboard/manage-students/ats-manage-students').then(m => m.ManageStudentsComponent)
+        loadComponent: () => import('./feature/ats/admin/manage-students/ats-manage-students').then(m => m.ManageStudentsComponent)
+      },
+      {path: 'ats-schedule',
+        loadComponent: () => import('./feature/ats/admin/schedule/ats-schedule').then(m => m.AdminScheduleComponent)
       }
     ]
   },
