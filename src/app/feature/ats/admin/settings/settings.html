@@ -1,0 +1,163 @@
+
+<!-- Dashboard Content -->
+<div class="dashboard">
+  <!-- Profile Settings -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-user-circle"></i> Profile Settings
+      </div>
+    </div>
+    
+    <!-- Fixed Profile Picture Section -->
+    <div class="profile-picture-container">
+      <div class="profile-picture">
+        <img [src]="profilePreview" alt="Profile" class="profile-img" id="profilePreview">
+        <label for="profileUpload" class="profile-overlay">
+          <i class="fas fa-camera"></i>
+          <input type="file" id="profileUpload" accept="image/*" 
+                 (change)="onProfilePictureUpload($event)" style="display: none;">
+        </label>
+      </div>
+      <div class="profile-preview-text">Preview</div>
+    </div>
+    
+    <form class="form-grid" id="profileForm" (ngSubmit)="saveProfileSettings()" #profileForm="ngForm">
+      <div class="form-group">
+       <label for="fullName" class="form-label">Full Name</label>
+      <input type="text" id="fullName" class="form-control"
+        [(ngModel)]="profileSettings.fullName" name="fullName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+       <input type="email" id="email" class="form-control"
+         [(ngModel)]="profileSettings.email" name="email" required>
+     </div>
+      
+      <div class="form-group">
+        <label for="mobile" class ="form-label">Mobile Number</label> 
+        <input type="tel" id="mobile" class="form-control" 
+               [(ngModel)]="profileSettings.mobile" name="mobile">
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Profile Changes
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- System Preferences -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-sliders-h"></i> System Preferences
+      </div>
+    </div>
+    
+    <form class="form-grid" id="preferencesForm" (ngSubmit)="savePreferences()" #preferencesForm="ngForm">
+      <div class="form-group">
+        <label for="theme" class="form-label">Theme Preference</label>
+        <select id="theme" class="form-control" [(ngModel)]="systemPreferences.theme" name="theme">
+          <option value="light">Light Theme</option>
+          <option value="dark">Dark Theme</option>
+          <option value="auto">Auto (System Default)</option>
+        </select>
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="toggle-group">
+          <div class="toggle-label">
+            <span class="toggle-text">Desktop Notifications</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="desktopNotifications" 
+                     [(ngModel)]="systemPreferences.desktopNotifications" name="desktopNotifications">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Preferences
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Security Settings -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-shield-alt"></i> Security Settings
+      </div>
+    </div>
+    
+    <form class="form-grid" id="securityForm" (ngSubmit)="updateSecuritySettings()" #securityForm="ngForm">
+      <div class="form-group">
+       <label for="currentPassword" class="form-label">Current Password</label>
+       <input type="password" id="currentPassword" class="form-control"
+         [(ngModel)]="securitySettings.currentPassword"
+         name="currentPassword" placeholder="Enter current password">
+        </div>
+      
+      <div class="form-group">
+        <label for="newPassword" class="form-label">New Password</label>
+        <input type="password" id="newPassword" class="form-control" 
+               [(ngModel)]="securitySettings.newPassword" name="newPassword" 
+               (input)="checkPasswordStrength(securitySettings.newPassword)"
+               placeholder="Enter new password">
+        <div class="password-strength" [ngClass]="passwordStrength.class">
+          <div class="password-strength-bar" [style.width]="passwordStrength.width"></div>
+        </div>
+        <div class="password-requirements">
+          <small>Password must contain at least 8 characters with uppercase, lowercase, numbers, and special characters</small>
+        </div>
+      </div>
+      
+      <div class="form-group">
+         <label for="confirmPassword" class="form-label">Confirm New Password</label>
+        <input type="password" id="confirmPassword" class="form-control" 
+               [(ngModel)]="securitySettings.confirmPassword" name="confirmPassword" 
+               placeholder="Confirm new password">
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="toggle-group">
+          <div class="toggle-label">
+            <span class="toggle-text">Two-Factor Authentication (2FA)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="twoFactorAuth" 
+                     [(ngModel)]="securitySettings.twoFactorAuth" name="twoFactorAuth">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="toggle-label">
+            <span class="toggle-text">Login Alerts</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="loginAlerts" 
+                     [(ngModel)]="securitySettings.loginAlerts" name="loginAlerts">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-shield-alt"></i> Update Security Settings
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

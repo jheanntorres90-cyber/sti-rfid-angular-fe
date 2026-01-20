@@ -174,7 +174,6 @@ export class AdminAnnouncementsComponent implements OnInit {
     });
   }
   applyFilters(): void {
-
   this.filter = { ...this.filter };
 }
 

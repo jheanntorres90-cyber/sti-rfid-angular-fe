@@ -58,6 +58,9 @@ export const routes: Routes = [
       {path: 'ats-announcements',
         loadComponent: () => import('./feature/ats/admin/announcements/announcements').then(m => m.AdminAnnouncementsComponent)
       },
+      {path: 'ats-settings',
+        loadComponent: () => import('./feature/ats/admin/settings/settings').then(m => m.AdminSettingsComponent)
+      },
     ]
   },
 
