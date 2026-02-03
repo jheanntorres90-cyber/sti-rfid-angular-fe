@@ -1,0 +1,356 @@
+<!-- Modern Alert Container -->
+<div class="alert-container" *ngIf="alerts.length > 0">
+  <div *ngFor="let alert of alerts" 
+       [ngClass]="'alert ' + alert.class"
+       [id]="alert.id"
+       class="alert">
+    
+    <div class="alert-icon">
+      <i [class]="alert.icon"></i>
+    </div>
+    
+    <div class="alert-content">
+      <div class="alert-title">{{alert.title}}</div>
+      <div class="alert-message" [innerHTML]="alert.message"></div>
+      
+      <div *ngIf="alert.showConfirm" class="alert-actions">
+        <button class="btn btn-danger btn-sm" (click)="onAlertConfirm(alert)">
+          Confirm
+        </button>
+        <button class="btn btn-secondary btn-sm" (click)="onAlertCancel(alert)">
+          Cancel
+        </button>
+      </div>
+    </div>
+    
+    <button class="alert-close" (click)="removeAlert(alert.id)" *ngIf="!alert.showConfirm">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div *ngIf="!alert.showConfirm" class="alert-progress"></div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="dashboard">
+  <!-- Register New Admin -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-user-plus"></i> Register New Admin
+      </div>
+    </div>
+    
+    <form [formGroup]="adminForm" (ngSubmit)="onSubmit()" class="form-grid">
+      <!-- Full Name -->
+      <div class="form-group">
+        <label for="fullName">Full Name *</label>
+        <input 
+          type="text" 
+          id="fullName" 
+          formControlName="fullName" 
+          class="form-control" 
+          placeholder="Enter full name"
+          [ngClass]="{'is-invalid': adminForm.get('fullName')?.touched && adminForm.get('fullName')?.invalid}">
+        <div class="invalid-feedback" *ngIf="adminForm.get('fullName')?.touched && adminForm.get('fullName')?.errors?.['required']">
+          Full name is required
+        </div>
+        <div class="invalid-feedback" *ngIf="adminForm.get('fullName')?.touched && adminForm.get('fullName')?.errors?.['minlength']">
+          Full name must be at least 2 characters
+        </div>
+      </div>
+      
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          class="form-control" 
+          placeholder="Enter email address"
+          [ngClass]="{'is-invalid': adminForm.get('email')?.touched && adminForm.get('email')?.invalid}">
+        <div class="invalid-feedback" *ngIf="adminForm.get('email')?.touched && adminForm.get('email')?.errors?.['required']">
+          Email is required
+        </div>
+        <div class="invalid-feedback" *ngIf="adminForm.get('email')?.touched && adminForm.get('email')?.errors?.['email']">
+          Please enter a valid email address
+        </div>
+      </div>
+      
+      <!-- Mobile -->
+      <div class="form-group">
+        <label for="mobile">Mobile Number</label>
+        <input 
+          type="tel" 
+          id="mobile" 
+          formControlName="mobile" 
+          class="form-control" 
+          placeholder="+63 912 345 6789">
+      </div>
+      
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">Username *</label>
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username" 
+          class="form-control" 
+          placeholder="Enter username"
+          [ngClass]="{'is-invalid': adminForm.get('username')?.touched && adminForm.get('username')?.invalid}">
+        <div class="invalid-feedback" *ngIf="adminForm.get('username')?.touched && adminForm.get('username')?.errors?.['required']">
+          Username is required
+        </div>
+        <div class="invalid-feedback" *ngIf="adminForm.get('username')?.touched && adminForm.get('username')?.errors?.['minlength']">
+          Username must be at least 3 characters
+        </div>
+      </div>
+      
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            formControlName="password" 
+            class="form-control" 
+            placeholder="Enter password"
+            [ngClass]="{'is-invalid': adminForm.get('password')?.touched && adminForm.get('password')?.invalid}">
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+          </button>
+        </div>
+        <div class="invalid-feedback" *ngIf="adminForm.get('password')?.touched && adminForm.get('password')?.errors?.['required']">
+          Password is required
+        </div>
+        <div class="invalid-feedback" *ngIf="adminForm.get('password')?.touched && adminForm.get('password')?.errors?.['minlength']">
+          Password must be at least 8 characters long
+        </div>
+      </div>
+      
+      <!-- Role -->
+      <div class="form-group">
+        <label for="role">Role *</label>
+        <select 
+          id="role" 
+          formControlName="role" 
+          class="form-control"
+          [ngClass]="{'is-invalid': adminForm.get('role')?.touched && adminForm.get('role')?.invalid}">
+          <option value="">Select Role</option>
+          <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="adminForm.get('role')?.touched && adminForm.get('role')?.errors?.['required']">
+          Role is required
+        </div>
+      </div>
+      
+      <!-- Profile Picture -->
+      <div class="form-group full-width">
+        <label for="profilePic">Profile Picture</label>
+        <input 
+          type="file" 
+          id="profilePic" 
+          (change)="onFileSelected($event, false)"
+          class="form-control" 
+          accept="image/*"
+          #fileInput
+          style="display: none;">
+        <div class="profile-picture">
+          <img 
+            [src]="adminForm.get('profilePic')?.value || 'https://via.placeholder.com/120?text=Upload+Photo'" 
+            alt="Profile Preview" 
+            class="profile-img"
+            id="profilePreview">
+          <label for="profilePic" class="profile-overlay" (click)="triggerFileInput()">
+            <i class="fas fa-camera"></i>
+          </label>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+        <div class="form-group full-width">
+          <div class="action-buttons">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Create Admin Account
+            </button>
+      </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Existing Admins -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-users"></i> Existing Admins
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="admins.length === 0 && !isLoading">
+            <td colspan="6" class="text-center py-4">
+              <i class="fas fa-users-slash fa-2x text-muted mb-2"></i>
+              <p class="text-muted">No admin accounts found</p>
+            </td>
+          </tr>
+          
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="text-center py-4">
+              <i class="fas fa-spinner fa-spin fa-2x"></i>
+              <p class="text-muted mt-2">Loading admins...</p>
+            </td>
+          </tr>
+          
+          <tr *ngFor="let admin of admins">
+            <td>
+              <img [src]="admin.profilePic || 'https://via.placeholder.com/40?text=AD'" 
+                   [alt]="admin.fullName" 
+                   class="profile-img table-profile">
+            </td>
+            <td>{{admin.fullName}}</td>
+            <td>{{admin.email}}</td>
+            <td>{{admin.mobile || 'N/A'}}</td>
+            <td>
+              <span class="role-badge" [ngClass]="getRoleBadgeClass(admin.role)">
+                {{admin.role}}
+              </span>
+            </td>
+            <td class="action-cell">
+              <button class="action-btn edit-btn" (click)="editAdminFromRow(admin)" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" (click)="confirmDelete(admin)" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="admins.length > 0">
+      <button class="pagination-btn" [disabled]="currentPage === 1" (click)="previousPage()">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <span class="pagination-info">Page {{currentPage}} of {{totalPages}}</span>
+      <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="nextPage()">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Admin Modal -->
+<div class="modal" [class.active]="isModalOpen">
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-content">
+    <button class="modal-close" (click)="closeModal()" title="Close">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h2 class="modal-title">
+       Edit Admin
+      </h2>
+    </div>
+    
+    <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()" class="form-grid">
+      <!-- Full Name -->
+      <div class="form-group">
+        <label for="editName">Full Name *</label>
+        <input type="text" id="editName" formControlName="fullName" class="form-control"
+               [ngClass]="{'is-invalid': editForm.get('fullName')?.touched && editForm.get('fullName')?.invalid}">
+        <div class="invalid-feedback" *ngIf="editForm.get('fullName')?.touched && editForm.get('fullName')?.errors?.['required']">
+          Full name is required
+        </div>
+        <div class="invalid-feedback" *ngIf="editForm.get('fullName')?.touched && editForm.get('fullName')?.errors?.['minlength']">
+          Full name must be at least 2 characters
+        </div>
+      </div>
+      
+      <!-- Email -->
+      <div class="form-group">
+        <label for="editEmail">Email Address *</label>
+        <input type="email" id="editEmail" formControlName="email" class="form-control"
+               [ngClass]="{'is-invalid': editForm.get('email')?.touched && editForm.get('email')?.invalid}">
+        <div class="invalid-feedback" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.errors?.['required']">
+          Email is required
+        </div>
+        <div class="invalid-feedback" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.errors?.['email']">
+          Please enter a valid email address
+        </div>
+      </div>
+      
+      <!-- Mobile -->
+      <div class="form-group">
+        <label for="editMobile">Mobile Number</label>
+        <input type="tel" id="editMobile" formControlName="mobile" class="form-control">
+      </div>
+      
+      <!-- Role -->
+      <div class="form-group">
+        <label for="editRole">Role *</label>
+        <select id="editRole" formControlName="role" class="form-control"
+                [ngClass]="{'is-invalid': editForm.get('role')?.touched && editForm.get('role')?.invalid}">
+          <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="editForm.get('role')?.touched && editForm.get('role')?.errors?.['required']">
+          Role is required
+        </div>
+      </div>
+      
+      <!-- Profile Picture -->
+      <div class="form-group full-width">
+        <label for="editProfilePic">Update Profile Picture</label>
+        <input 
+          type="file" 
+          id="editProfilePic" 
+          (change)="onFileSelected($event, true)"
+          class="form-control" 
+          accept="image/*"
+          #editFileInput
+          style="display: none;">
+        <div class="profile-picture">
+          <img 
+            [src]="editForm.get('profilePic')?.value || 'https://via.placeholder.com/120?text=Update+Photo'" 
+            alt="Profile Preview" 
+            class="profile-img"
+            id="editProfilePreview">
+          <label for="editProfilePic" class="profile-overlay" (click)="triggerFileInput(true)">
+            <i class="fas fa-camera"></i>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Modal Buttons -->
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+     <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="executeDelete()" [disabled]="isDeleting">
+        <i class="fas" [ngClass]="isDeleting ? 'fa-spinner fa-spin' : 'fa-trash'"></i>
+        {{ isDeleting ? 'Deleting...' : 'Delete Admin' }}
+    </button>
+  </div>

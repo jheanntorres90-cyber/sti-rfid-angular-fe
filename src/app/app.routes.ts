@@ -61,6 +61,9 @@ export const routes: Routes = [
       {path: 'ats-settings',
         loadComponent: () => import('./feature/ats/admin/settings/settings').then(m => m.AdminSettingsComponent)
       },
+      {path: 'ats-add-new-admin',
+        loadComponent: () => import('./feature/ats/admin/add-new-admin/add-admin').then(m => m.AdminAddAdminComponent)
+      },
     ]
   },
 
