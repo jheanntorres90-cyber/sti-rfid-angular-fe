@@ -1,17 +1,33 @@
 <aside
-  class="bg-slate-950 text-white h-screen flex flex-col transition-all duration-300"
-  [class.w-64]="sideNavOpen"
-  [class.w-16]="!sideNavOpen"
->
+  class="h-screen sticky top-0 flex flex-col transition-all duration-300
+         bg-white dark:bg-[#1e1e1e]
+         border-r border-gray-100 dark:border-white/5
+         shadow-sm text-gray-700 dark:text-slate-300">
+
   <!-- App logo + toggle -->
-  <div
-    class="sticky top-0 z-10 bg-slate-950 p-2 text-xl font-bold border-b border-gray-700 flex items-center justify-between shadow-md"
-  >
-    <h1 [class.hidden]="!sideNavOpen">STI Bacoor</h1>
-    <button (click)="toggleSideNav()" class="p-2 rounded hover:bg-gray-700 transition">
-      <i class="pi pi-bars text-white"></i>
-    </button>
+<div
+  class="sticky top-0 z-10 px-6 py-5
+         border-b border-gray-100 dark:border-white/5
+         bg-white dark:bg-[#1e1e1e]">
+
+        <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+       <div
+        class="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600">
+      <i class="pi pi-building text-white text-lg"></i>
+    </div>
+
+<div [class.hidden]="!sideNavOpen">
+        <h1 class="text-sm font-black uppercase text-gray-900 dark:text-white">
+          STI Portal
+        </h1>
+        <p class="text-[10px] font-black tracking-[0.2em] text-blue-600 dark:text-blue-400">
+          FACULTY
+        </p>
+    </div>
+    </div>
   </div>
+</div>
 
   <!-- Navigation (scrollable) -->
   <nav
@@ -29,28 +45,31 @@
 
     <!-- Attendance Portal with dropdown -->
     <div>
-      <button
-        (click)="toggleAtsMenu()"
-        class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-gray-700 transition"
-      >
-        <span class="flex items-center gap-2">
-          <i class="pi pi-box"></i>
-          <span [class.hidden]="!sideNavOpen">Attendance Portal</span>
-        </span>
+    <button
+     (click)="toggleAtsMenu()" class="flex items-center justify-between w-full px-4 py-3 rounded-xl
+         hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-[12px] font-bold uppercase tracking-tight">
+     <span class="flex items-center gap-3">
+     <i class="pi pi-calendar"></i>
+     <span [class.hidden]="!sideNavOpen">Attendance Portal</span>
+    </span>
         <span
           [class.hidden]="!sideNavOpen"
           [class.rotate-90]="atsMenuOpen"
-          class="transition-transform"
-        >
-          <i class="pi pi-angle-right"></i>
-        </span>
-      </button>
+          class="transition-transform">
 
-      <div [class.hidden]="!atsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+    <i 
+    class="pi pi-chevron-down text-[10px] transition-transform"
+    [class.rotate-180]="atsMenuOpen"
+    [class.hidden]="!sideNavOpen"></i>
+    </span> 
+  </button>
+
+      <div [class.hidden]="!atsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1 pl-4
+       border-l-2 border-gray-50 dark:border-white/5">
         @for (page of atsMenu; track page.path) {
         <a
           [routerLink]="page.path"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition"
         >
           {{ page.label }}
@@ -58,38 +77,38 @@
         }
         <a
           routerLink="/admin/ats-attendance"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Attendance
         </a>
 
         <a
           routerLink="/admin/ats-manage-students"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Manage Students
         </a>
          <a
           routerLink="/admin/ats-schedule"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Schedule
         </a>
         <a
           routerLink="/admin/ats-announcements"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Announcements
         </a>
         <a
           routerLink="/admin/ats-settings"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Settings
         </a>
         <a
           routerLink="/admin/ats-add-new-admin"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700">
           Add New Admin
         </a>
@@ -101,8 +120,9 @@
     <div>
       <button
         (click)="toggleGpsMenu()"
-        class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-gray-700 transition"
-      >
+        class="flex items-center gap-3 px-4 py-3 rounded-xl
+       hover:bg-gray-50 dark:hover:bg-white/5
+       transition-all text-[12px] font-bold uppercase tracking-tight">
         <span class="flex items-center gap-2">
           <i class="pi pi-inbox"></i>
           <span [class.hidden]="!sideNavOpen">Grading Portal</span>
@@ -116,22 +136,24 @@
         </span>
       </button>
 
-        <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1"></div>
+        <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1 pl-4
+       border-l-2 border-gray-50 dark:border-white/5"></div>
 
-       <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+       <div [class.hidden]="!gpsMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1 pl-4
+       border-l-2 border-gray-50 dark:border-white/5">
         @for (page of gpsMenu; track page.path) {
         <a
           [routerLink]="page.path"
-          routerLinkActive="bg-gray-700"
-          class="block px-3 py-2 rounded hover:bg-gray-700 transition"
-        >
+          routerLinkActive="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-black"
+          class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           {{ page.label }}
         </a>
         }
 
           <a
           routerLink="/admin/grade-records"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-black"
+
           class="block px-3 py-2 rounded hover:bg-gray-700"
         >
           Records Management
@@ -139,7 +161,8 @@
 
          <a
           routerLink="/admin/grades-management"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-black"
+
           class="block px-3 py-2 rounded hover:bg-gray-700 transition"
         >
           Grades Management
@@ -147,7 +170,7 @@
 
         <a
           routerLink="/admin/schedule-management"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition"
         >
           Schedule Management
@@ -161,7 +184,7 @@
 
         <a
           routerLink="/admin/announcements-management"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20text-green-700 dark:text-green-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           Announcements
         </a>
@@ -174,20 +197,20 @@
          
         <a
           routerLink="/admin/data-management"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20text-green-700 dark:text-green-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           Data Management
         </a>
        
         <div
-         class="mt-4 px-3 text-[11px] font-semibold tracking-wider text-gray-400 uppercase"
+         class="mt-4 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400"
           [class.hidden]="!sideNavOpen">
           Others
         </div>
 
         <a
           routerLink="/admin/admin-settings"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           Admin Settings
         </a> 
@@ -198,8 +221,9 @@
      <div>
       <button
         (click)="toggleAdminMenu()"
-        class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-gray-700 transition"
-      >
+        class="flex items-center gap-3 px-4 py-3 rounded-xl
+       hover:bg-gray-50 dark:hover:bg-white/5
+       transition-all text-[12px] font-bold uppercase tracking-tight">
         <span class="flex items-center gap-2">
           <i class="pi pi-box"></i>
           <span [class.hidden]="!sideNavOpen">System Management</span>
@@ -213,11 +237,12 @@
         </span>
       </button>
 
-      <div [class.hidden]="!adminMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1">
+      <div [class.hidden]="!adminMenuOpen || !sideNavOpen" class="ml-6 mt-1 space-y-1 pl-4
+       border-l-2 border-gray-50 dark:border-white/5">
         @for (page of adminMenu; track page.path) {
         <a
           [routerLink]="page.path"
-          routerLinkActive="bg-gray-700"
+          routerLinkActive="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-black"
           class="block px-3 py-2 rounded hover:bg-gray-700 transition"
         >
           {{ page.label }}
