@@ -23,7 +23,7 @@ interface QuickAction {
 }
 
 @Component({
-  selector: 'app-admin-dashboard',
+  selector: 'app-admin-ats-dashboard',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ats-dashboard.component.html',
