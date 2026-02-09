@@ -1,0 +1,318 @@
+<!-- Filter Section -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Filter Attendance Records</div>
+  </div>
+  
+  <div class="filter-section">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="fromDate">From Date *</label>
+          <input 
+            type="date" 
+            id="fromDate" 
+            class="form-control" 
+            formControlName="fromDate"
+            [class.invalid]="filterForm.get('fromDate')?.invalid && filterForm.get('fromDate')?.touched">
+          <div class="field-error" *ngIf="filterForm.get('fromDate')?.invalid && filterForm.get('fromDate')?.touched">
+            From date is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="toDate">To Date *</label>
+          <input 
+            type="date" 
+            id="toDate" 
+            class="form-control" 
+            formControlName="toDate"
+            [class.invalid]="filterForm.get('toDate')?.invalid && filterForm.get('toDate')?.touched">
+          <div class="field-error" *ngIf="filterForm.get('toDate')?.invalid && filterForm.get('toDate')?.touched">
+            To date is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="attendanceCourse">Course *</label>
+          <select 
+            id="attendanceCourse" 
+            class="form-control" 
+            formControlName="course"
+            [class.invalid]="filterForm.get('course')?.invalid && filterForm.get('course')?.touched">
+            <option value="">Select Course</option>
+            <option *ngFor="let course of courses" [value]="course">{{ course }}</option>
+          </select>
+          <div class="field-error" *ngIf="filterForm.get('course')?.invalid && filterForm.get('course')?.touched">
+            Course is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="attendanceSection">Section *</label>
+          <select 
+            id="attendanceSection" 
+            class="form-control" 
+            formControlName="section"
+            [class.invalid]="filterForm.get('section')?.invalid && filterForm.get('section')?.touched">
+            <option value="">Select Section</option>
+            <option *ngFor="let section of sections" [value]="section">Section {{ section }}</option>
+          </select>
+          <div class="field-error" *ngIf="filterForm.get('section')?.invalid && filterForm.get('section')?.touched">
+            Section is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="attendanceSubject">Subject *</label>
+          <select 
+            id="attendanceSubject" 
+            class="form-control" 
+            formControlName="subject"
+            [class.invalid]="filterForm.get('subject')?.invalid && filterForm.get('subject')?.touched">
+            <option value="">Select Subject</option>
+            <option *ngFor="let subject of subjects" [value]="subject">{{ subject }}</option>
+          </select>
+          <div class="field-error" *ngIf="filterForm.get('subject')?.invalid && filterForm.get('subject')?.touched">
+            Subject is required
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            <i class="fas fa-filter"></i> Apply Filters
+          </button>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="resetFilters()" style="width: 100%">
+            <i class="fas fa-redo"></i> Reset Filters
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Export Buttons -->
+<div class="action-buttons">
+  <button class="btn btn-success" (click)="exportToCSV()">
+    <i class="fas fa-file-csv"></i> Export CSV
+  </button>
+  <button class="btn btn-secondary" (click)="exportToExcel()">
+    <i class="fas fa-file-excel"></i> Export Excel
+  </button>
+  <button class="btn btn-info" (click)="generateReport()">
+    <i class="fas fa-chart-bar"></i> Generate Report
+  </button>
+</div>
+
+<!-- Attendance Summary -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue-icon">
+      <i class="fas fa-user-check"></i>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ summary.present }}</div>
+      <div class="stat-label">Present</div>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon yellow-icon">
+      <i class="fas fa-user-clock"></i>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ summary.late }}</div>
+      <div class="stat-label">Late</div>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon red-icon">
+      <i class="fas fa-user-times"></i>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ summary.absent }}</div>
+      <div class="stat-label">Absent</div>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon green-icon">
+      <i class="fas fa-percentage"></i>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ summary.attendanceRate }}</div>
+      <div class="stat-label">Attendance Rate</div>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance List Table -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Attendance Records</div>
+    <div class="records-info">
+      Showing <span id="attendanceShowingCount">{{ showingCount }}</span> of 
+      <span id="attendanceTotalCount">{{ filteredRecords.length }}</span> records
+    </div>
+  </div>
+  
+  <div class="table-container">
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Name</th>
+          <th>Course</th>
+          <th>Section</th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Time In</th>
+          <th>Time Out</th>
+          <th>Status</th>
+          <th>Method</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceTableBody">
+        <tr *ngFor="let record of paginatedRecords">
+          <td>{{ record.studentId }}</td>
+          <td>{{ record.name }}</td>
+          <td>{{ record.course }}</td>
+          <td>{{ record.section }}</td>
+          <td>{{ record.subject }}</td>
+          <td>{{ formatDate(record.date) }}</td>
+          <td>{{ record.timeIn || '-' }}</td>
+          <td>{{ record.timeOut || '-' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(record.status)">
+              {{ record.status }}
+            </span>
+          </td>
+          <td>
+            <span class="method-badge" [ngClass]="getMethodClass(record.method)">
+              {{ record.method }}
+            </span>
+          </td>
+          <td class="action-cell">
+            <button class="action-btn view-btn" (click)="viewRecord(record)">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn edit-btn" (click)="openEditModal(record)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteRecord(record)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredRecords.length === 0">
+          <td colspan="11" style="text-align: center; padding: 40px;">
+            No records found. Try adjusting your filters.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="table-footer">
+    <div class="pagination-info">
+      Page <span id="attendanceCurrentPage">{{ currentPage }}</span> of 
+      <span id="attendanceTotalPages">{{ totalPages }}</span>
+    </div>
+    <div class="pagination-controls">
+      <button class="btn btn-outline" id="attendancePrevPage" 
+              (click)="previousPage()" [disabled]="currentPage === 1">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <button class="btn btn-outline" id="attendanceNextPage" 
+              (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Attendance Modal -->
+<div class="modal" [class.active]="showEditModal" id="editAttendanceModal">
+  <div class="modal-content">
+    <button class="modal-close" (click)="closeEditModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Attendance Record</h2>
+    </div>
+    
+    <form [formGroup]="editForm" (ngSubmit)="updateAttendance()" class="form-grid" id="editAttendanceForm">
+      <div class="form-group">
+        <label for="editStudentName">Student Name</label>
+        <input type="text" id="editStudentName" class="form-control" formControlName="studentName" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="editStudentId">Student ID</label>
+        <input type="text" id="editStudentId" class="form-control" formControlName="studentId" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="editAttendanceDate">Date</label>
+        <input type="date" id="editAttendanceDate" class="form-control" formControlName="date">
+        <div class="field-error" *ngIf="editForm.get('date')?.invalid && editForm.get('date')?.touched">
+          Date is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editTimeIn">Time In</label>
+        <input type="time" id="editTimeIn" class="form-control" formControlName="timeIn">
+        <div class="field-error" *ngIf="editForm.get('timeIn')?.invalid && editForm.get('timeIn')?.touched">
+          Time in is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editTimeOut">Time Out</label>
+        <input type="time" id="editTimeOut" class="form-control" formControlName="timeOut">
+        <div class="field-error" *ngIf="editForm.get('timeOut')?.invalid && editForm.get('timeOut')?.touched">
+          Time out is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editAttendanceStatus">Status</label>
+        <select id="editAttendanceStatus" class="form-control" formControlName="status">
+          <option value="">Select Status</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+        <div class="field-error" *ngIf="editForm.get('status')?.invalid && editForm.get('status')?.touched">
+          Status is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editAttendanceMethod">Method</label>
+        <select id="editAttendanceMethod" class="form-control" formControlName="method">
+          <option value="">Select Method</option>
+          <option *ngFor="let method of methods" [value]="method">{{ method }}</option>
+        </select>
+        <div class="field-error" *ngIf="editForm.get('method')?.invalid && editForm.get('method')?.touched">
+          Method is required
+        </div>
+      </div>
+      
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label for="editRemarks">Remarks</label>
+        <textarea id="editRemarks" class="form-control" rows="3" placeholder="Add remarks..." formControlName="remarks"></textarea>
+      </div>
+      
+      <div class="form-group" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>

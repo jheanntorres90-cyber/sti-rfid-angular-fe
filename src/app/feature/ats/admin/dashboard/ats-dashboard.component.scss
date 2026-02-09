@@ -6,9 +6,9 @@
 /* Import Font Awesome */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-/* CSS Variables from Vanilla CSS */
+
 .dashboard {
-  // Exact same variables from vanilla CSS
+
   --primary-blue: #2563eb;
   --secondary-blue: #1d4ed8;
   --light-blue: #dbeafe;
@@ -27,9 +27,11 @@
   flex: 1;
   background: var(--white);
   min-height: 100vh;
+  
+
 }
 
-/* Stats Grid - EXACT SAME as vanilla */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

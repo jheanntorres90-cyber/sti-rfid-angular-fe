@@ -1,76 +1,53 @@
-
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { BadgeModule } from 'primeng/badge';
+import { TooltipModule } from 'primeng/tooltip';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  standalone: true, 
+  standalone: true,
+  imports: [CommonModule, AvatarModule, ButtonModule, BadgeModule, TooltipModule, RouterModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
 export class HeaderComponent implements OnInit {
-  pageTitle: string = 'Manage Announcements';
-  currentDate: Date = new Date();
-  formattedDate: string = '';
-  isDarkTheme: boolean = false;
-  notificationCount: number = 3;
-  userName: string = 'Admin User';
-  userInitials: string = 'AU';
+  isDarkMode = false;
+  lastName = 'Prof. Santos';
+  currentDate = new Date();
+  greeting = '';
 
   ngOnInit() {
-    this.updateDate();
-    this.loadThemePreference();
-  }
-
-  updateDate() {
-    this.currentDate = new Date();
-    this.formatDate();
-  }
-
-  formatDate() {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    this.setGreeting();
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    const dayName = days[this.currentDate.getDay()];
-    const monthName = months[this.currentDate.getMonth()];
-    const day = this.currentDate.getDate();
-    const year = this.currentDate.getFullYear();
-    
-    this.formattedDate = `${dayName}, ${monthName} ${day}, ${year}`;
-  }
-
-  toggleMenu() {
-    const event = new CustomEvent('menuToggle');
-    document.dispatchEvent(event);
-    console.log('Menu toggled');
-  }
-
-  toggleTheme() {
-    this.isDarkTheme = !this.isDarkTheme;
-    this.applyTheme();
-    this.saveThemePreference();
-    console.log('Theme toggled:', this.isDarkTheme ? 'dark' : 'light');
-  }
-
-  applyTheme() {
-    if (this.isDarkTheme) {
-      document.body.setAttribute('data-theme', 'dark');
-    } else {
-      document.body.removeAttribute('data-theme');
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+      this.applyTheme(true);
     }
   }
 
-  loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme');
-    this.isDarkTheme = savedTheme === 'dark';
-    this.applyTheme();
+  setGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) this.greeting = 'Good Morning';
+    else if (hour < 17) this.greeting = 'Good Afternoon';
+    else this.greeting = 'Good Evening';
   }
 
-  saveThemePreference() {
-    localStorage.setItem('theme', this.isDarkTheme ? 'dark' : 'light');
+  toggleTheme() {
+    this.applyTheme(!this.isDarkMode);
   }
 
-  showNotifications() {
-    console.log('Show notifications clicked');
+  private applyTheme(dark: boolean) {
+    this.isDarkMode = dark;
+    if (dark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
   }
 }
-

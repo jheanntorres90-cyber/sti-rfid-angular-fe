@@ -46,8 +46,23 @@ export const routes: Routes = [
       {path: 'data-management',
         loadComponent: () => import('./feature/gps/admin/data-management/data-management').then(m => m.AdminGpsDataManagementComponent)
       },
-      {path: 'admin-settings',
-        loadComponent: () => import('./feature/gps/admin/settings/gps-settings').then(m => m.AdminGpsSettingsComponent)
+      {path: 'ats-attendance',
+        loadComponent: () => import('./feature/ats/admin/attendance/ats-attendance.components').then(m => m.AdminAtsAttendanceComponent)
+      },
+      {path: 'ats-manage-students', 
+        loadComponent: () => import('./feature/ats/admin/manage-students/ats-manage-students').then(m => m.ManageStudentsComponent)
+      },
+      {path: 'ats-schedule',
+        loadComponent: () => import('./feature/ats/admin/schedule/ats-schedule').then(m => m.AdminScheduleComponent)
+      },
+      {path: 'ats-announcements',
+        loadComponent: () => import('./feature/ats/admin/announcements/announcements').then(m => m.AdminAnnouncementsComponent)
+      },
+      {path: 'ats-settings',
+        loadComponent: () => import('./feature/ats/admin/settings/settings').then(m => m.AdminSettingsComponent)
+      },
+      {path: 'ats-add-new-admin',
+        loadComponent: () => import('./feature/ats/admin/add-new-admin/add-admin').then(m => m.AdminAddAdminComponent)
       },
     ]
   },

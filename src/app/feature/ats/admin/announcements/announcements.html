@@ -1,0 +1,294 @@
+<!-- Modern Alert Container -->
+<div id="alertContainer" class="alert-container">
+  <div *ngFor="let alert of alerts" 
+       [id]="alert.id"
+       class="alert alert-{{alert.type}} show">
+    <div class="alert-icon">
+      <i [class]="alert.icon"></i>
+    </div>
+    <div class="alert-content">
+      <div class="alert-title">{{alert.title}}</div>
+      <div class="alert-message">{{alert.message}}</div>
+    </div>
+    <button class="alert-close" (click)="removeAlert(alert.id)">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="alert-progress"></div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="dashboard">
+  <!-- Create Announcement Form -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Create New Announcement</div>
+    </div>
+    
+    <form #announcementForm="ngForm" (ngSubmit)="createAnnouncement()" class="form-grid">
+      <div class="form-group">
+        <label for="audience">Audience</label>
+        <select id="audience" [(ngModel)]="newAnnouncement.audience" 
+                name="audience" class="form-control" required>
+          <option value="">Select Audience</option>
+          <option value="General">General (All Users)</option>
+          <option value="Teachers">Teachers Only</option>
+          <option value="Students">Students Only</option>
+          <option value="Parents">Parents Only</option>
+          <option value="BSIT">BSIT Students</option>
+          <option value="BSCS">BSCS Students</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="course">Course (Optional)</label>
+        <select id="course" [(ngModel)]="newAnnouncement.course" 
+                name="course" class="form-control">
+          <option value="">Select Course</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSCS">BSCS</option>
+          <option value="BSBA">BSBA</option>
+          <option value="BSTM">BSTM</option>
+          <option value="ABM">ABM</option>
+          <option value="STEM">STEM</option>
+          <option value="HUMMS">HUMMS</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="subject">Subject (Optional)</label>
+        <input type="text" id="subject" [(ngModel)]="newAnnouncement.subject" 
+               name="subject" class="form-control" placeholder="Enter announcement subject">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image Attachment</label>
+        <input type="file" id="image" (change)="onFileSelected($event, 'create')" 
+               class="form-control" accept="image/*">
+        <div class="file-preview" *ngIf="imagePreview">
+          <img [src]="imagePreview" alt="Preview">
+        </div>
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="message">Message</label>
+        <textarea id="message" [(ngModel)]="newAnnouncement.message" 
+                  name="message" class="form-control" 
+                  placeholder="Enter your announcement message" required></textarea>
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Post Announcement
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Filter Announcements</div>
+    </div>
+    
+    <div class="filter-grid">
+      <div class="form-group">
+        <label for="filterAudience">Audience</label>
+        <select id="filterAudience" [(ngModel)]="filter.audience" 
+                class="form-control">
+          <option value="">All Audiences</option>
+          <option value="General">General</option>
+          <option value="Teachers">Teachers</option>
+          <option value="Students">Students</option>
+          <option value="Parents">Parents</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSCS">BSCS</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="filterCourse">Course</label>
+        <select id="filterCourse" [(ngModel)]="filter.course" 
+                class="form-control">
+          <option value="">All Courses</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSCS">BSCS</option>
+          <option value="BSBA">BSBA</option>
+          <option value="BSTM">BSTM</option>
+          <option value="ABM">ABM</option>
+          <option value="STEM">STEM</option>
+          <option value="HUMMS">HUMMS</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="filterSubject">Subject Contains</label>
+        <input type="text" id="filterSubject" [(ngModel)]="filter.subject" 
+               class="form-control" placeholder="Enter subject keywords">
+      </div>
+      
+      <div class="form-group">
+        <label for="filterDate">Date</label>
+        <input type="date" id="filterDate" [(ngModel)]="filter.date" 
+               class="form-control">
+      </div>
+    </div>
+    
+    <div class="form-group full-width">
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="applyFilters()">
+           <i class="fas fa-filter"></i> Apply Filters
+        </button>
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-x"></i> Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-success" (click)="exportToCSV()">
+      <i class="fas fa-file-csv"></i> Export CSV
+    </button>
+    <button class="btn btn-secondary" (click)="exportToExcel()">
+      <i class="fas fa-file-excel"></i> Export Excel
+    </button>
+  </div>
+
+  <!-- Announcement List -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">All Announcements</div>
+      <div class="announcement-count">Total: {{filteredAnnouncements.length}} announcements</div>
+    </div>
+    
+    <div class="table-container">
+      <table id="announcementTable">
+        <thead>
+          <tr>
+            <th>Audience</th>
+            <th>Course</th>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Image</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let announcement of filteredAnnouncements">
+            <td><span [class]="getAudienceBadgeClass(announcement.audience)">{{announcement.audience}}</span></td>
+            <td>{{announcement.course || '-'}}</td>
+            <td>{{announcement.subject}}</td>
+            <td>{{announcement.message}}</td>
+            <td>
+              <span *ngIf="announcement.imageName; else noImage" class="image-attached">
+                <i class="fas fa-image"></i> {{announcement.imageName}}
+              </span>
+              <ng-template #noImage>
+                <span class="image-indicator">No Image</span>
+              </ng-template>
+            </td>
+            <td>{{announcement.date}}</td>
+            <td class="action-cell">
+              <button class="action-btn edit-btn" (click)="editAnnouncement(announcement)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" (click)="deleteAnnouncement(announcement.id)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Announcement Modal -->
+<div class="modal" [class.active]="isModalOpen" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Announcement</h3>
+      <button class="modal-close" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form #editForm="ngForm" (ngSubmit)="updateAnnouncement()" class="form-grid" *ngIf="editingAnnouncement">
+      <div class="form-group">
+        <label for="editAudience">Audience</label>
+        <select id="editAudience" [(ngModel)]="editingAnnouncement.audience" 
+                name="audience" class="form-control" required>
+          <option value="General">General (All Users)</option>
+          <option value="Teachers">Teachers Only</option>
+          <option value="Students">Students Only</option>
+          <option value="Parents">Parents Only</option>
+          <option value="BSIT">BSIT Students</option>
+          <option value="BSCS">BSCS Students</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="editCourse">Course (Optional)</label>
+        <select id="editCourse" [(ngModel)]="editingAnnouncement.course" 
+                name="course" class="form-control">
+          <option value="">Select Course</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSCS">BSCS</option>
+          <option value="BSBA">BSBA</option>
+          <option value="BSTM">BSTM</option>
+          <option value="ABM">ABM</option>
+          <option value="STEM">STEM</option>
+          <option value="HUMMS">HUMMS</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="editSubject">Subject (Optional)</label>
+        <input type="text" id="editSubject" [(ngModel)]="editingAnnouncement.subject" 
+               name="subject" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="editImage">Image Attachment</label>
+        <input type="file" id="editImage" (change)="onFileSelected($event, 'edit')" 
+               class="form-control" accept="image/*">
+        <div class="file-preview" *ngIf="editImagePreview">
+          <img [src]="editImagePreview" alt="Preview">
+        </div>
+        <div id="currentImage">
+          <p *ngIf="editingAnnouncement.imageName; else noCurrentImage" style="margin: 10px 0; font-size: 14px;">
+            <strong>Current Image:</strong> {{editingAnnouncement.imageName}}
+          </p>
+          <ng-template #noCurrentImage>
+            <p style="margin: 10px 0; font-size: 14px; color: var(--medium-gray);">
+              <em>No image attached</em>
+            </p>
+          </ng-template>
+          <button *ngIf="editingAnnouncement.imageName" type="button" 
+                  class="btn btn-danger btn-sm" 
+                  (click)="removeImage(editingAnnouncement)">
+            <i class="fas fa-trash"></i> Remove Image
+          </button>
+        </div>
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="editMessage">Message</label>
+        <textarea id="editMessage" [(ngModel)]="editingAnnouncement.message" 
+                  name="message" class="form-control" required></textarea>
+      </div>
+      
+      <div class="form-group full-width">
+        <div class="action-buttons">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
